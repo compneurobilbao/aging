@@ -42,7 +42,7 @@ to use in other projects.
 To get started using these components in your own software, please go to the
 repository README_.
 
-.. _README: https://github.com/uwescience/aging/blob/master/README.md
+.. _README: https://github.com/erramuzpe/aging/blob/master/README.md
 
 License
 =======
@@ -61,7 +61,7 @@ MAINTAINER = "Ariel Rokem"
 MAINTAINER_EMAIL = "arokem@gmail.com"
 DESCRIPTION = description
 LONG_DESCRIPTION = long_description
-URL = "http://github.com/uwescience/aging"
+URL = "http://github.com/erramuzpe/aging"
 DOWNLOAD_URL = ""
 LICENSE = "MIT"
 AUTHOR = "Ariel Rokem"

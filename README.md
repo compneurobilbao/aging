@@ -1,5 +1,5 @@
 ## aging
-[![Build Status](https://travis-ci.org/uwescience/aging.svg?branch=master)](https://travis-ci.org/uwescience/aging)
+[![Build Status](https://travis-ci.org/erramuzpe/aging.svg?branch=master)](https://travis-ci.org/erramuzpe/aging)
 
 Shablona is a template project for small scientific python projects. The
 recommendations we make here follow the standards and conventions of much of
@@ -265,7 +265,7 @@ go to the "admin" panel of the project on RTD, and navigate into the
 "advanced settings" so that you can tell it that your Python
 configuration file is in `doc/conf.py`:
 
-![RTD conf](https://github.com/uwescience/aging/blob/master/doc/_static/RTD-advanced-conf.png)
+![RTD conf](https://github.com/erramuzpe/aging/blob/master/doc/_static/RTD-advanced-conf.png)
 
  http://aging.readthedocs.org/en/latest/
 
@@ -406,7 +406,7 @@ with these elements.
 For example, this repository contains an [IPython notebook] that reads
 in some data, and creates a figure. Maybe this is *Figure 1* from some
 future article? You can see this notebook fully rendered
-[here](https://github.com/uwescience/aging/blob/master/scripts/Figure1.ipynb).
+[here](https://github.com/erramuzpe/aging/blob/master/scripts/Figure1.ipynb).
 
 
 ### Using `aging` as a template
@@ -419,7 +419,7 @@ the tests might look like.
 To use this repository as a template, start by cloning it to your own
 computer under the name you will want your project to have:
 
-	git clone https://github.com/uwescience/aging smallish
+	git clone https://github.com/erramuzpe/aging smallish
 	cd smallish
 
 To point to your own repository on github you will have to issue
