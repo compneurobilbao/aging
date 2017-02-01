@@ -23,7 +23,7 @@ class SphinxDocString(NumpyDocString):
     def _str_signature(self):
         return ['']
         if self['Signature']:
-            return ['``%s``' % self['Signature']] + ['']
+            return ['``{0!s}``'.format(self['Signature'])] + ['']
         else:
             return ['']
 
@@ -39,7 +39,7 @@ class SphinxDocString(NumpyDocString):
             out += self._str_field_list(name)
             out += ['']
             for param,param_type,desc in self[name]:
-                out += self._str_indent(['**%s** : %s' % (param.strip(),
+                out += self._str_indent(['**{0!s}** : {1!s}'.format(param.strip(),
                                                           param_type)])
                 out += ['']
                 out += self._str_indent(desc,8)
@@ -62,18 +62,18 @@ class SphinxDocString(NumpyDocString):
         """
         out = []
         if self[name]:
-            out += ['.. rubric:: %s' % name, '']
+            out += ['.. rubric:: {0!s}'.format(name), '']
             prefix = getattr(self, '_name', '')
 
             if prefix:
-                prefix = '~%s.' % prefix
+                prefix = '~{0!s}.'.format(prefix)
 
             autosum = []
             others = []
             for param, param_type, desc in self[name]:
                 param = param.strip()
                 if not self._obj or hasattr(self._obj, param):
-                    autosum += ["   %s%s" % (prefix, param)]
+                    autosum += ["   {0!s}{1!s}".format(prefix, param)]
                 else:
                     others.append((param, param_type, desc))
 
@@ -85,7 +85,7 @@ class SphinxDocString(NumpyDocString):
                 maxlen_0 = max([len(x[0]) for x in others])
                 maxlen_1 = max([len(x[1]) for x in others])
                 hdr = "="*maxlen_0 + "  " + "="*maxlen_1 + "  " + "="*10
-                fmt = '%%%ds  %%%ds  ' % (maxlen_0, maxlen_1)
+                fmt = '%{0:d}s  %{1:d}s  '.format(maxlen_0, maxlen_1)
                 n_indent = maxlen_0 + maxlen_1 + 4
                 out += [hdr]
                 for param, param_type, desc in others:
@@ -126,14 +126,14 @@ class SphinxDocString(NumpyDocString):
         if len(idx) == 0:
             return out
 
-        out += ['.. index:: %s' % idx.get('default','')]
+        out += ['.. index:: {0!s}'.format(idx.get('default',''))]
         for section, references in idx.iteritems():
             if section == 'default':
                 continue
             elif section == 'refguide':
-                out += ['   single: %s' % (', '.join(references))]
+                out += ['   single: {0!s}'.format((', '.join(references)))]
             else:
-                out += ['   %s: %s' % (section, ','.join(references))]
+                out += ['   {0!s}: {1!s}'.format(section, ','.join(references))]
         return out
 
     def _str_references(self):
@@ -155,7 +155,7 @@ class SphinxDocString(NumpyDocString):
                 m = re.match(r'.. \[([a-z0-9._-]+)\]', line, re.I)
                 if m:
                     items.append(m.group(1))
-            out += ['   ' + ", ".join(["[%s]_" % item for item in items]), '']
+            out += ['   ' + ", ".join(["[{0!s}]_".format(item) for item in items]), '']
         return out
 
     def _str_examples(self):
