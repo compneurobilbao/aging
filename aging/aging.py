@@ -5,9 +5,6 @@ import scipy.optimize as opt
 from scipy.special import erf
 from .due import due, Doi
 
-__all__ = ["transform_data", "cumgauss"]
-
-
 # Use duecredit (duecredit.org) to provide a citation to relevant work to
 # be cited. This does nothing, unless the user has duecredit installed,
 # And calls this with duecredit (as in `python -m duecredit script.py`):
