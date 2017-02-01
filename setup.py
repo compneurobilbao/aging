@@ -1,6 +1,5 @@
 import os
-from setuptools import setup, find_packages
-PACKAGES = find_packages()
+from setuptools import setup
 
 # Get version and release info, which is all stored in aging/version.py
 ver_file = os.path.join('aging', 'version.py')
@@ -20,7 +19,8 @@ opts = dict(name=NAME,
             author_email=AUTHOR_EMAIL,
             platforms=PLATFORMS,
             version=VERSION,
-            packages=PACKAGES,
+            packages=['numpy',
+                      'sklearn'],
             package_data=PACKAGE_DATA,
             requires=REQUIRES)
 
