@@ -1,7 +1,6 @@
 from __future__ import absolute_import, division, print_function
 import numpy as np
 import pandas as pd
-from scipy.special import erf
 from .due import due, Doi
 
 # Use duecredit (duecredit.org) to provide a citation to relevant work to
@@ -96,4 +95,4 @@ def cumgauss(x, mu, sigma):
         erf(x) = \\frac{1}{\\sqrt{\\pi}} \int_{-x}^{x} e^{t^2} dt
 
     """
-    return 0.5 * (1 + erf((x - mu) / (np.sqrt(2) * sigma)))
+    return 0.5 * (1 + (x - mu) / (np.sqrt(2) * sigma))
