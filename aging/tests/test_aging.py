@@ -3,9 +3,10 @@ import os.path as op
 # import numpy as np
 # import numpy.testing as npt
 
-import aging as sb
+import aging as ag
+# import aging.proc as pr
 
-data_path = op.join(sb.__path__[0], 'data')
+data_path = op.join(ag.__path__[0], 'data')
 
 
 def test_transform_data():
