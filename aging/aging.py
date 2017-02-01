@@ -11,9 +11,9 @@ __all__ = ["Model", "Fit", "opt_err_func", "transform_data", "cumgauss"]
 # Use duecredit (duecredit.org) to provide a citation to relevant work to
 # be cited. This does nothing, unless the user has duecredit installed,
 # And calls this with duecredit (as in `python -m duecredit script.py`):
-due.cite(Doi("10.1167/13.9.30"),
-         description="Template project for small scientific Python projects",
-         tags=["reference-implementation"],
+due.cite(Doi(""),
+         description="",
+         tags=[""],
          path='aging')
 
 
@@ -101,111 +101,3 @@ def cumgauss(x, mu, sigma):
 
     """
     return 0.5 * (1 + erf((x - mu) / (np.sqrt(2) * sigma)))
-
-
-def opt_err_func(params, x, y, func):
-    """
-    Error function for fitting a function using non-linear optimization
-
-    Parameters
-    ----------
-    params : tuple
-        A tuple with the parameters of `func` according to their order of
-        input
-
-    x : float array
-        An independent variable.
-
-    y : float array
-        The dependent variable.
-
-    func : function
-        A function with inputs: `(x, *params)`
-
-    Returns
-    -------
-    float array
-        The marginals of the fit to x/y given the params
-    """
-    return y - func(x, *params)
-
-
-class Model(object):
-    """ Class for fitting cumulative Gaussian functions to data"""
-    def __init__(self, func=cumgauss):
-        """ Initialize a model object
-
-        Parameters
-        ----------
-        data : Pandas DataFrame
-            Data from a subjective contrast judgement experiment
-
-        func : callable, optional
-            A function that relates x and y through a set of parameters.
-            Default: :func:`cumgauss`
-        """
-        self.func = func
-
-    def fit(self, x, y, initial=[0.5, 1]):
-        """
-        Fit a Model to data
-
-        Parameters
-        ----------
-        x : float or array
-           The independent variable: contrast values presented in the
-           experiment
-        y : float or array
-           The dependent variable
-
-        Returns
-        -------
-        fit : :class:`Fit` instance
-            A :class:`Fit` object that contains the parameters of the model.
-
-        """
-        params, _ = opt.leastsq(opt_err_func, initial,
-                                args=(x, y, self.func))
-        return Fit(self, params)
-
-
-class Fit(object):
-    """
-    Class for representing a fit of a model to data
-    """
-    def __init__(self, model, params):
-        """
-        Initialize a :class:`Fit` object
-
-        Parameters
-        ----------
-        model : a :class:`Model` instance
-            An object representing the model used
-
-        params : array or list
-            The parameters of the model evaluated for the data
-
-        """
-        self.model = model
-        self.params = params
-
-    def predict(self, x):
-        """
-        Predict values of the dependent variable based on values of the
-        indpendent variable.
-
-        Parameters
-        ----------
-        x : float or array
-            Values of the independent variable. Can be values presented in
-            the experiment. For out-of-sample prediction (e.g. in
-            cross-validation), these can be values
-            that were not presented in the experiment.
-
-        Returns
-        -------
-        y : float or array
-            Predicted values of the dependent variable, corresponding to
-            values of the independent variable.
-        """
-        return self.model.func(x, *self.params)
