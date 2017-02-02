@@ -5,3 +5,11 @@
 [![Code Issues](https://www.quantifiedcode.com/api/v1/project/6c550ad5a8f64655a542603baf66a65b/badge.svg)](https://www.quantifiedcode.com/app/project/6c550ad5a8f64655a542603baf66a65b)
 
 Repo site for AGING prediction using neuroimaging descriptors. 
+
+
+What to do:
+
+- preproc module
+- Multi Scale approach
+- Single Level - internal/external/edges
+- Hierarchichal Atlas
