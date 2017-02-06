@@ -19,18 +19,3 @@ def test_transform_data():
     # different ways ultimately generates the same arrays.
     pass
 
-
-def test_cum_gauss():
-    pass
-
-
-def test_opt_err_func():
-    pass
-
-
-def test_Model():
-    pass
-
-
-def test_params_regression():
-    pass

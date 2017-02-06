@@ -35,22 +35,6 @@ def transform_data(data):
     n : array
         The number of trials in each x,y condition
     """
-    if isinstance(data, str):
-        data = pd.read_csv(data)
-
-    contrast1 = data['contrast1']
-    answers = data['answer']
-
-    x = np.unique(contrast1)
-    y = []
-    n = []
-
-    for c in x:
-        idx = np.where(contrast1 == c)
-        n.append(float(len(idx[0])))
-        answer1 = len(np.where(answers[idx[0]] == 1)[0])
-        y.append(answer1 / n[-1])
-    return x, y, n
 
 
 def cumgauss(x, mu, sigma):
