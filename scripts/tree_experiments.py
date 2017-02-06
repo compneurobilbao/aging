@@ -6,108 +6,105 @@ Created on Fri Feb  3 09:52:14 2017
 @author: asier
 """
 
+from __future__ import absolute_import, division, print_function
+import os.path as op
+import scipy.io as sio
+from scipy.spatial.distance import pdist
+from scipy.cluster import hierarchy
+import numpy as np
+# import aging.proc as pr
+
+
+def getNewick(node, newick, parentdist, leaf_names):
+    if node.is_leaf():
+        return "%s:%.2f%s" % (leaf_names[node.id], parentdist - node.dist, newick)
+    else:
+        if len(newick) > 0:
+            newick = "):%.2f%s" % (parentdist - node.dist, newick)
+        else:
+            newick = ");"
+        newick = getNewick(node.get_left(), newick, node.dist, leaf_names)
+        newick = getNewick(node.get_right(), ",%s" % (newick), node.dist, leaf_names)
+        newick = "(%s" % (newick)
+        return newick
+
+
+hc_data_path = "/home/asier/Desktop/hc_tools"
+partition = op.join(hc_data_path, 'average_networks_12.mat')
+
+data = sio.loadmat(partition)
+func_network = data['func_network']
+
+Y = pdist(func_network, 'cosine')
+Z = hierarchy.linkage(Y,  method='weighted')
+
+leaf_names = [str(i) for i in np.arange(1, 2515)]
+
+tree = hierarchy.to_tree(Z, False)
+newick = getNewick(tree, "", tree.dist, leaf_names)
+
+
 from ete3 import Tree
 
-
-def collapsed_leaf(node):
-    if all(i <= 3 for i in node2labels[node]) and len(node2labels[node]) == 1:
-        return True
-    else:
-        return False
-
-t = Tree( '((H:1,I:3)HI:0,(B:2,(C:4,D:5)CD:0)BCD:0);', format=3 )
+t = Tree(newick)
 print(t)
+t.show()
+
+search_by_size(t, 50)
+len(t)
+len(t.children)
+
+t.describe()
+    
+t.children[0].describe()
+
+t.get_descendants()[0].describe()
+t.get_leaf_names()
+
+
+def root_dist(node):
+    return node.get_distance(node.get_tree_root())
+
+
+def nodes_from_level(nodelist, partition_end):
+    print(len(nodelist))
+    if len(nodelist) == partition_end:
+        return nodelist
+    else:
+        distances = [root_dist(node) for node in nodelist]
+        min_dist_idx = np.argmin(distances)
+
+        nodelist.append(nodelist[min_dist_idx].children[0])
+        nodelist.append(nodelist[min_dist_idx].children[1])
+        nodelist.remove(nodelist[min_dist_idx])
+
+    return nodes_from_level(nodelist, partition_end)
+
+
+
+
+a = nodes_from_level([t], 20)
+
+b = [t.get_leaf_names() for t in a]
 
 for node in t.iter_descendants("levelorder"):
-    print(node, node.name, node.dist)
+    print(node.name, node.get_distance(node.get_tree_root()))
 
-node2labels = t.get_cached_content(store_attr="dist")
-node2labels
-t2 = Tree(t.write(is_leaf_fn=collapsed_leaf, format=1), format = 1)
-print(t2)
-t2.get_cached_content(store_attr="name")
-
-
-
-
-
-def collapsed_leaf(node):
-    if len(node2labels[node]) == 1:
-       return True
-    else:
-       return False
-
-t = Tree("((((a,a,a)a,a)aa, (b,b)b)ab, (c, (d,d)d)cd);", format=1)
-# We create a cache with every node content
-node2labels = t.get_cached_content(store_attr="name")
-# We can even load the collapsed version as a new tree
-t2 = Tree( t.write(is_leaf_fn=collapsed_leaf) )
-t2.get_cached_content(store_attr="name")
-
-
-
-
-
-
-
-def processable_node(node):
-    if node.dist < 3:
-       return True
-    else:
-       return False
-
-t = Tree( '((H:1,I:3)HI:0,(B:2,(C:4,D:5)CD:0)BCD:0);', format=1 )
-print(t)
-
-
-
-t2 =  Tree(t.write(is_leaf_fn=processable_node, format=1))
-print(t2)
-t2.get_cached_content(store_attr="name")
-
-
-
-
-
-t = Tree( '(((1:1,3:1)0:2,5:3)0:3),(((2:2,4:2)0:2,6:4)0:1,7:5);', format=1 )
-print(t)
-
-def processable_node(node):
-    if node.name != 0 and node.get_distance(node.get_tree_root()) > 2:
-       return True
-    else:
-       return False
-
-t2 =  Tree(t.write(is_leaf_fn=processable_node), format=1)
-print(t2)
-
-
-t = Tree( '(((1:1,3:1)1:2,5:3)1:3),(((2:2,4:2)1:2,(6:4,7:4)1:1)1:1);', format=1 )
-print(t)
-t.get_cached_content(store_attr="dist")
-
-for leaf in t:
-    print(leaf.get_distance(leaf.get_tree_root()))
-
-
-for leaf in t:
-    print(leaf.dist)
-    
-    
-for leaf in t:
-    print(leaf.get_distance(leaf.get_tree_root(), leaf.get_ancestors()[0]))    
-        
-    
-for node in t.iter_leaves():
-    print(node.name)
+for node in t.iter_descendants("levelorder"):
+    print(node.name, node.dist)
+  
     
     
     
-    
-    
-    
+def search_by_size(node, size):
+    "Finds nodes with a given number of leaves"
+    matches = []
+    for n in node.traverse():
+       if len(n) == size:
+          matches.append(n)
+    return matches
+
     
 t = Tree('((D,F)E,(B,H)B);', format=8)    
 print(t)
-    
     
