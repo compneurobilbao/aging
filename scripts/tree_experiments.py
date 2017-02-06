@@ -67,7 +67,7 @@ def root_dist(node):
 
 
 def nodes_from_level(nodelist, partition_end):
-    print(len(nodelist))
+    #print(len(nodelist))
     if len(nodelist) == partition_end:
         return nodelist
     else:
@@ -78,14 +78,18 @@ def nodes_from_level(nodelist, partition_end):
         nodelist.append(nodelist[min_dist_idx].children[1])
         nodelist.remove(nodelist[min_dist_idx])
 
-    return nodes_from_level(nodelist, partition_end)
+        return nodes_from_level(nodelist, partition_end)
 
 
 
+for i in range(1,20):
+    a = nodes_from_level([t], i)
+    b = [t.get_leaf_names() for t in a]
+    [print(len(c)) for c in b]  
+    print("")
+     
 
-a = nodes_from_level([t], 20)
 
-b = [t.get_leaf_names() for t in a]
 
 for node in t.iter_descendants("levelorder"):
     print(node.name, node.get_distance(node.get_tree_root()))
