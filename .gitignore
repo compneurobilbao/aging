@@ -2,3 +2,4 @@
 *~
 *.cache
 doc/_build/
+aging/data/hc/average_networks_12.mat
