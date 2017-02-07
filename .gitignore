@@ -3,3 +3,4 @@
 *.cache
 doc/_build/
 aging/data/hc/
+aging/data/*
