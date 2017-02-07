@@ -62,6 +62,7 @@ def root_dist(node):
 
 
 def nodes_from_level(node_list, partition_end):
+    # TODO: Save and load from disk to avoid recalculating
     if len(node_list) == partition_end:
         return node_list
     else:
@@ -78,7 +79,7 @@ def nodes_from_level(node_list, partition_end):
 def get_leaf_from_list(node_list):
     return [node.get_leaf_names() for node in node_list]
 
-
+# TODO
 def get_partition_leaf(partition_level):
     pass
 
