@@ -129,7 +129,6 @@ def generate_mod(nMod):
 
     modules_indx = modules_ordered(nMod,1:nMod);
     'FC & SC descriptors calculations'
-    %     tic
     FC_Mod=single(zeros(nMod,nMod,length(subjIdxList)));
     SC_Mod=single(zeros(nMod,nMod,length(subjIdxList)));
 
@@ -143,7 +142,7 @@ def generate_mod(nMod):
 	    SC_Mod(j,i,:)=SC_Mod(i,j,:);
 	end
     end
-    %         toc
+    
     clear A B
     save (['mod_' num2str(nMod)],'FC_Mod','SC_Mod')
 end
@@ -154,9 +153,10 @@ def build_FC_SC():
     SC_matrix = generate_SC()
 
     ID_subj = np.load(os.path.join(container_data_dir, 'ID_subj.npy'))
+    partition_data = sio.loadmat(os.path.join(container_data_dir,
+                              'partition_ordered.mat'))
     jobs = []
-    for i in range(1,len(ID_subj)):
-                
+    for i in range(1, len(ID_subj)):
         p = multiprocessing.Process(target=generate_mod, args=(i,))
         jobs.append(p)
         p.start()
