@@ -5,6 +5,8 @@ import aging as ag
 import scipy
 import scipy.io as sio
 import numpy as np
+import multiprocessing
+
 
 data_path = os.path.join(ag.__path__[0], 'data')
 aging_data_dir = os.path.join(data_path, 'subjects')
@@ -82,37 +84,37 @@ def generate_age_sex_ID():
 def generate_FC():
     ID_subj = np.load(os.path.join(container_data_dir, 'ID_subj.npy'))
 
-    FC_matrix = np.empty((2514, 2514, len(ID_subj)))
+    FC_matrix = np.empty((2514, 2514, len(ID_subj)), dtype='float32')
 
     for i, idx in enumerate(ID_subj):
         print(idx)
         folder_path = os.path.join(aging_data_dir, idx)
         time_series = sio.loadmat(os.path.join(folder_path, 'time_series.mat'))
         fc = np.corrcoef(time_series['time_series'].T)
-        # TODO: handle NaNs
-        # if np.argwhere(np.isnan(fc)): print('isnan')
+
+        # handle NaNs
+        if np.argwhere(np.isnan(fc)) != 0:
+            fc = np.nan_to_num(fc)
+
         FC_matrix[:, :, i] = fc
-    np.save(os.path.join(container_data_dir, 'ID_subj'), ID_subj)
-    pass
+
+    return FC_matrix
 
 
 def generate_SC():
     ID_subj = np.load(os.path.join(container_data_dir, 'ID_subj.npy'))
 
-    SC_matrix = np.empty((2514, 2514, len(ID_subj)))
+    SC_matrix = np.empty((2514, 2514, len(ID_subj)), dtype='float32')
 
     for i, idx in enumerate(ID_subj):
         print(idx)
         folder_path = os.path.join(aging_data_dir, idx)
         fiber_num = sio.loadmat(os.path.join(folder_path, 'fiber_num.mat'))
-        sc = scipy.sparse.csr_matrix(fiber_num['fiber_num'])
-        # TODO: handle NaNs
-        # if np.argwhere(np.isnan(fc)): print('isnan')
+        # TODO: Try Sparse - not good for concatenation
 
-        SC_matrix[:, :, i] = sc
+        SC_matrix[:, :, i] = fiber_num['fiber_num']
 
-    
-    pass
+    return SC_matrix
 
 
 def generate_data_containers():
@@ -122,13 +124,45 @@ def generate_data_containers():
 
     generate_age_sex_ID()
 
-    generate_FC()
-    generate_SC()
-    pass
- 
+
+def generate_mod(nMod):
+
+    modules_indx = modules_ordered(nMod,1:nMod);
+    'FC & SC descriptors calculations'
+    %     tic
+    FC_Mod=single(zeros(nMod,nMod,length(subjIdxList)));
+    SC_Mod=single(zeros(nMod,nMod,length(subjIdxList)));
+
+    for i=1:nMod
+	for j=i:nMod
+	    A=FCpil(modules_indx{i},modules_indx{j},:);
+	    FC_Mod(i,j,:)=sum(sum(A,1),2)/(length(modules_indx{i})*length(modules_indx{j}));
+	    FC_Mod(j,i,:)=FC_Mod(i,j,:);
+	    B=double(SCpil(modules_indx{i},modules_indx{j},:));
+	    SC_Mod(i,j,:)=sum(sum(B,1),2)/(length(modules_indx{i})*length(modules_indx{j}));
+	    SC_Mod(j,i,:)=SC_Mod(i,j,:);
+	end
+    end
+    %         toc
+    clear A B
+    save (['mod_' num2str(nMod)],'FC_Mod','SC_Mod')
+end
+
+
+def build_FC_SC():
+    FC_matrix = generate_FC()
+    SC_matrix = generate_SC()
+
+    ID_subj = np.load(os.path.join(container_data_dir, 'ID_subj.npy'))
+    jobs = []
+    for i in range(1,len(ID_subj)):
+                
+        p = multiprocessing.Process(target=generate_mod, args=(i,))
+        jobs.append(p)
+        p.start()
+  
         
         
         
         
-        
-        
+np.savez('mat.npz', name1=arr1, name2=arr2)
