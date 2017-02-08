@@ -1,6 +1,8 @@
 from __future__ import absolute_import, division, print_function
 import os
 from distutils.dir_util import copy_tree
+from itertools import product
+
 import aging as ag
 import scipy
 import scipy.io as sio
@@ -126,22 +128,21 @@ def generate_data_containers():
 
 
 def generate_mod(nMod):
+    from numpy import squeeze as sq
 
-    modules_indx = modules_ordered(nMod,1:nMod);
+    modules_indx = modules_ordered[nMod, :nMod]
     'FC & SC descriptors calculations'
-    FC_Mod=single(zeros(nMod,nMod,length(subjIdxList)));
-    SC_Mod=single(zeros(nMod,nMod,length(subjIdxList)));
+    FC_Mod = np.empty((nMod, nMod, len(ID_subj)), dtype='float32')
+    SC_Mod = np.empty((nMod, nMod, len(ID_subj)), dtype='float32')
 
-    for i=1:nMod
-	for j=i:nMod
-	    A=FCpil(modules_indx{i},modules_indx{j},:);
-	    FC_Mod(i,j,:)=sum(sum(A,1),2)/(length(modules_indx{i})*length(modules_indx{j}));
-	    FC_Mod(j,i,:)=FC_Mod(i,j,:);
-	    B=double(SCpil(modules_indx{i},modules_indx{j},:));
-	    SC_Mod(i,j,:)=sum(sum(B,1),2)/(length(modules_indx{i})*length(modules_indx{j}));
-	    SC_Mod(j,i,:)=SC_Mod(i,j,:);
-	end
-    end
+    for i, j in product(range(i), range(j)):
+    	    A = FC_matrix[modules_indx{i}, modules_indx{j}, :)
+    	    FC_Mod[i,j,:] = sum(sum(A, 1), 2) / (length(modules_indx{i})*length(modules_indx{j}))
+    	    FC_Mod[j,i,:] = FC_Mod(i,j,:)
+    	    B = SC_matrix(modules_indx{i},modules_indx{j},:))
+    	    SC_Mod[i,j,:] = sum(sum(B,1),2)/(length(modules_indx{i})*length(modules_indx{j}))
+    	    SC_Mod[j,i,:] = SC_Mod(i,j,:)
+
     
     clear A B
     save (['mod_' num2str(nMod)],'FC_Mod','SC_Mod')
@@ -155,6 +156,7 @@ def build_FC_SC():
     ID_subj = np.load(os.path.join(container_data_dir, 'ID_subj.npy'))
     partition_data = sio.loadmat(os.path.join(container_data_dir,
                               'partition_ordered.mat'))
+    modules_ordered = partition_data['modules_ordered']
     jobs = []
     for i in range(1, len(ID_subj)):
         p = multiprocessing.Process(target=generate_mod, args=(i,))
