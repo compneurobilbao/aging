@@ -133,7 +133,7 @@ def generate_mod(nMod, FC_matrix, SC_matrix, modules_ordered, ID_subj):
     from numpy import squeeze as sq
 
     modules_idx = modules_ordered[nMod-1, :nMod]-1  # -1 due to 0 indexing
-    'FC & SC descriptors calculations'
+
     FC_Mod = np.empty((nMod, nMod, len(ID_subj)), dtype='float32')
     SC_Mod = np.empty((nMod, nMod, len(ID_subj)), dtype='float32')
 
@@ -160,32 +160,23 @@ def build_FC_SC_mods():
     if not os.path.exists(mod_data_dir):
         os.makedirs(mod_data_dir)
 
-    sh_ID_subj = multiprocessing.Array(ctypes.c_double, (164))
     sh_ID_subj = np.load(os.path.join(container_data_dir, 'ID_subj.npy'))
 
-    sh_FC_matrix = multiprocessing.Array(ctypes.c_double,
-                                         (2514, 2514, len(sh_ID_subj)))
-    sh_SC_matrix = multiprocessing.Array(ctypes.c_double,
-                                         (2514, 2514, len(sh_ID_subj)))
     sh_FC_matrix = generate_FC()
     sh_SC_matrix = generate_SC()
 
-    sh_modules_ordered = multiprocessing.Array(ctypes.c_double,
-                                               (2514, 2514))
     partition_data = sio.loadmat(os.path.join(container_data_dir,
                                               'partition_ordered.mat'))
     sh_modules_ordered = partition_data['modules_ordered']
 
-    jobs = []
-    for i in range(2, 1001):
-        p = multiprocessing.Process(target=generate_mod,
-                                    args=(i,
-                                          sh_FC_matrix,
-                                          sh_SC_matrix,
-                                          sh_modules_ordered,
-                                          sh_ID_subj))
-        jobs.append(p)
-        p.start()
+    for nMod in range(2, 1001):
+        if not os.path.exists(mod_data_dir, 'mod_{}'.format(nMod)):
+            generate_mod(nMod,
+                         sh_FC_matrix,
+                         sh_SC_matrix,
+                         sh_modules_ordered,
+                         sh_ID_subj)
+
 
 if __name__ == "__main__":
     import sys
