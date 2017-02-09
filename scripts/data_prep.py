@@ -98,9 +98,7 @@ def generate_FC():
         time_series = sio.loadmat(os.path.join(folder_path, 'time_series.mat'))
         fc = np.corrcoef(time_series['time_series'].T)
 
-        # handle NaNs
-        if np.argwhere(np.isnan(fc)) != 0:
-            fc = np.nan_to_num(fc)
+        fc = np.nan_to_num(fc)
 
         FC_matrix[:, :, i] = fc
 
