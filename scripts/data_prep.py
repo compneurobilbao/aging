@@ -170,7 +170,7 @@ def build_FC_SC_mods():
     sh_modules_ordered = partition_data['modules_ordered']
 
     for nMod in range(2, 1001):
-        if not os.path.exists(mod_data_dir, 'mod_{}'.format(nMod)):
+        if not os.path.exists(os.path.join(mod_data_dir, 'mod_{}'.format(nMod))):
             generate_mod(nMod,
                          sh_FC_matrix,
                          sh_SC_matrix,
