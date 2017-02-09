@@ -5,10 +5,8 @@ if __name__ == "__main__" and __package__ is None:
     import sys, os
     sys.path.insert(0, os.path.abspath('..'))
 
-import os
 from distutils.dir_util import copy_tree
 from itertools import product
-
 
 import aging as ag
 import scipy.io as sio
