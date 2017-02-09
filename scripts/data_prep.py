@@ -195,18 +195,3 @@ if __name__ == "__main__":
     build_FC_SC_mods()
     print('mods generated')
     sys.exit()
-
-    for nMod in range(1,71):
-        try: 
-            modules_idx = modules_ordered[nMod-1, :nMod]-1  # -1 due to 0 indexing
-            'FC & SC descriptors calculations'
-            FC_Mod = np.empty((nMod, nMod, len(ID_subj)), dtype='float32')
-            SC_Mod = np.empty((nMod, nMod, len(ID_subj)), dtype='float32')
-        
-            for i, j in product(range(nMod), range(nMod)):
-                idx_i, idx_j = np.ix_(sq(modules_idx[i]), sq(modules_idx[j]))
-        except:
-            print(nMod,i,j)
-            
- idx_i, idx_j = np.ix_(sq(modules_idx[i]), sq(modules_idx[28]))           
-            
