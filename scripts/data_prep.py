@@ -4,7 +4,6 @@ from distutils.dir_util import copy_tree
 from itertools import product
 
 import aging as ag
-import scipy
 import scipy.io as sio
 import numpy as np
 import multiprocessing
@@ -90,7 +89,6 @@ def generate_FC():
     FC_matrix = np.empty((2514, 2514, len(ID_subj)), dtype='float32')
 
     for i, idx in enumerate(ID_subj):
-        print(idx)
         folder_path = os.path.join(aging_data_dir, idx)
         time_series = sio.loadmat(os.path.join(folder_path, 'time_series.mat'))
         fc = np.corrcoef(time_series['time_series'].T)
@@ -110,7 +108,6 @@ def generate_SC():
     SC_matrix = np.empty((2514, 2514, len(ID_subj)), dtype='float32')
 
     for i, idx in enumerate(ID_subj):
-        print(idx)
         folder_path = os.path.join(aging_data_dir, idx)
         fiber_num = sio.loadmat(os.path.join(folder_path, 'fiber_num.mat'))
         # TODO: Try Sparse - not good for concatenation
@@ -151,7 +148,11 @@ def generate_mod(nMod):
              'FC_Mod', 'SC_Mod')
 
 
-def build_FC_SC():
+def build_FC_SC_mods():
+    
+    if not os.path.exists(mods_data_dir):
+        os.makedirs(mods_data_dir)
+    
     FC_matrix = generate_FC()
     SC_matrix = generate_SC()
 
@@ -164,3 +165,12 @@ def build_FC_SC():
         p = multiprocessing.Process(target=generate_mod, args=(i,))
         jobs.append(p)
         p.start()
+
+if __name__ == "__main__":
+    import sys
+
+    generate_data_containers()
+    print('Data containers generated')
+    build_FC_SC_mods()
+    print('mods generated')
+    sys.exit()
