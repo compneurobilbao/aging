@@ -174,7 +174,7 @@ def build_FC_SC_mods():
     sh_modules_ordered = partition_data['modules_ordered']
 
     jobs = []
-    for i in range(1, 1001):
+    for i in range(2, 1001):
         p = multiprocessing.Process(target=generate_mod,
                                     args=(i,
                                           sh_FC_matrix,
