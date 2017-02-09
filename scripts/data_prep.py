@@ -13,6 +13,7 @@ import multiprocessing
 data_path = os.path.join(ag.__path__[0], 'data')
 aging_data_dir = os.path.join(data_path, 'subjects')
 container_data_dir = os.path.join(data_path, 'container_data')  # ID_subj,FCpil
+mod_data_dir = os.path.join(data_path, 'mods')
 
 life_span_path = "/home/asier/Desktop/AGING/life_span_paolo"
 life_span2_path = "/home/asier/Desktop/AGING/life_span2"
@@ -130,23 +131,24 @@ def generate_data_containers():
 def generate_mod(nMod):
     from numpy import squeeze as sq
 
-    modules_indx = modules_ordered[nMod, :nMod]
+    modules_idx = modules_ordered[nMod-1, :nMod]-1  # -1 due to 0 indexing
     'FC & SC descriptors calculations'
     FC_Mod = np.empty((nMod, nMod, len(ID_subj)), dtype='float32')
     SC_Mod = np.empty((nMod, nMod, len(ID_subj)), dtype='float32')
 
-    for i, j in product(range(i), range(j)):
-    	    A = FC_matrix[modules_indx{i}, modules_indx{j}, :)
-    	    FC_Mod[i,j,:] = sum(sum(A, 1), 2) / (length(modules_indx{i})*length(modules_indx{j}))
-    	    FC_Mod[j,i,:] = FC_Mod(i,j,:)
-    	    B = SC_matrix(modules_indx{i},modules_indx{j},:))
-    	    SC_Mod[i,j,:] = sum(sum(B,1),2)/(length(modules_indx{i})*length(modules_indx{j}))
-    	    SC_Mod[j,i,:] = SC_Mod(i,j,:)
+    for i, j in product(range(nMod), range(nMod)):
+        idx_i, idx_j = np.ix_(sq(modules_idx[i]), sq(modules_idx[j]))
 
-    
-    clear A B
-    save (['mod_' num2str(nMod)],'FC_Mod','SC_Mod')
-end
+        _A = FC_matrix[idx_i, idx_j, :]
+        FC_Mod[i, j, :] = np.sum(_A,(0,1)) / (len(modules_idx[i])*len(modules_idx[j]))
+        FC_Mod[j, i, :] = FC_Mod[i, j, :]
+        
+        _B = SC_matrix[idx_i, idx_j, :]
+        SC_Mod[i, j, :] = np.sum(_B,(0,1)) / (len(modules_idx[i])*len(modules_idx[j]))
+        SC_Mod[j, i, :] = SC_Mod[i, j, :]
+
+    np.savez(os.path.join(mod_data_dir, 'mod_{}'.format(nMod)),
+             'FC_Mod', 'SC_Mod')
 
 
 def build_FC_SC():
@@ -162,9 +164,3 @@ def build_FC_SC():
         p = multiprocessing.Process(target=generate_mod, args=(i,))
         jobs.append(p)
         p.start()
-  
-        
-        
-        
-        
-np.savez('mat.npz', name1=arr1, name2=arr2)
