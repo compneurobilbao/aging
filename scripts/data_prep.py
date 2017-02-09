@@ -12,6 +12,7 @@ import aging as ag
 import scipy.io as sio
 import numpy as np
 import multiprocessing
+import ctypes
 
 
 data_path = os.path.join(ag.__path__[0], 'data')
@@ -128,7 +129,7 @@ def generate_data_containers():
     generate_age_sex_ID()
 
 
-def generate_mod(nMod):
+def generate_mod(nMod, FC_matrix, SC_matrix, modules_ordered, ID_subj):
     from numpy import squeeze as sq
 
     modules_idx = modules_ordered[nMod-1, :nMod]-1  # -1 due to 0 indexing
@@ -140,11 +141,11 @@ def generate_mod(nMod):
         idx_i, idx_j = np.ix_(sq(modules_idx[i]), sq(modules_idx[j]))
 
         _A = FC_matrix[idx_i, idx_j, :]
-        FC_Mod[i, j, :] = np.sum(_A,(0,1)) / (len(modules_idx[i])*len(modules_idx[j]))
+        FC_Mod[i, j, :] = np.sum(_A, (0, 1)) / (len(modules_idx[i]) * len(modules_idx[j]))
         FC_Mod[j, i, :] = FC_Mod[i, j, :]
-        
+
         _B = SC_matrix[idx_i, idx_j, :]
-        SC_Mod[i, j, :] = np.sum(_B,(0,1)) / (len(modules_idx[i])*len(modules_idx[j]))
+        SC_Mod[i, j, :] = np.sum(_B, (0, 1)) / (len(modules_idx[i]) * len(modules_idx[j]))
         SC_Mod[j, i, :] = SC_Mod[i, j, :]
 
     np.savez(os.path.join(mod_data_dir, 'mod_{}'.format(nMod)),
@@ -152,20 +153,34 @@ def generate_mod(nMod):
 
 
 def build_FC_SC_mods():
-    
+
     if not os.path.exists(mod_data_dir):
         os.makedirs(mod_data_dir)
-    
-    FC_matrix = generate_FC()
-    SC_matrix = generate_SC()
 
-    ID_subj = np.load(os.path.join(container_data_dir, 'ID_subj.npy'))
+    sh_ID_subj = multiprocessing.Array(ctypes.c_double, (164))
+    sh_ID_subj = np.load(os.path.join(container_data_dir, 'ID_subj.npy'))
+
+    sh_FC_matrix = multiprocessing.Array(ctypes.c_double,
+                                         (2514, 2514, len(sh_ID_subj)))
+    sh_SC_matrix = multiprocessing.Array(ctypes.c_double,
+                                         (2514, 2514, len(sh_ID_subj)))
+    sh_FC_matrix = generate_FC()
+    sh_SC_matrix = generate_SC()
+
+    sh_modules_ordered = multiprocessing.Array(ctypes.c_double,
+                                               (2514, 2514))
     partition_data = sio.loadmat(os.path.join(container_data_dir,
-                              'partition_ordered.mat'))
-    modules_ordered = partition_data['modules_ordered']
+                                              'partition_ordered.mat'))
+    sh_modules_ordered = partition_data['modules_ordered']
+
     jobs = []
-    for i in range(1, len(ID_subj)):
-        p = multiprocessing.Process(target=generate_mod, args=(i,))
+    for i in range(1, 1001):
+        p = multiprocessing.Process(target=generate_mod,
+                                    args=(i,
+                                          sh_FC_matrix,
+                                          sh_SC_matrix,
+                                          sh_modules_ordered,
+                                          sh_ID_subj))
         jobs.append(p)
         p.start()
 
