@@ -155,8 +155,8 @@ def generate_mod(nMod):
 
 def build_FC_SC_mods():
     
-    if not os.path.exists(mods_data_dir):
-        os.makedirs(mods_data_dir)
+    if not os.path.exists(mod_data_dir):
+        os.makedirs(mod_data_dir)
     
     FC_matrix = generate_FC()
     SC_matrix = generate_SC()
