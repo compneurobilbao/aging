@@ -6,4 +6,5 @@
 #SBATCH -o out # File to which STDOUT will be written
 #SBATCH -e err # File to which STDERR will be written
 
+source ~/.bashrc
 python data_prep.py
