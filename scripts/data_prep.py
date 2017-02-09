@@ -138,7 +138,10 @@ def generate_mod(nMod, FC_matrix, SC_matrix, modules_ordered, ID_subj):
     SC_Mod = np.empty((nMod, nMod, len(ID_subj)), dtype='float32')
 
     for i, j in product(range(nMod), range(nMod)):
-        idx_i, idx_j = np.ix_(sq(modules_idx[i]), sq(modules_idx[j]))
+        if modules_idx[i].shape[0] == 1 or modules_idx[j].shape[0] == 1:
+            idx_i, idx_j = sq(modules_idx[i]), sq(modules_idx[j])
+        else:
+            idx_i, idx_j = np.ix_(sq(modules_idx[i]), sq(modules_idx[j]))
 
         _A = FC_matrix[idx_i, idx_j, :]
         FC_Mod[i, j, :] = np.sum(_A, (0, 1)) / (len(modules_idx[i]) * len(modules_idx[j]))
@@ -192,3 +195,18 @@ if __name__ == "__main__":
     build_FC_SC_mods()
     print('mods generated')
     sys.exit()
+
+    for nMod in range(1,71):
+        try: 
+            modules_idx = modules_ordered[nMod-1, :nMod]-1  # -1 due to 0 indexing
+            'FC & SC descriptors calculations'
+            FC_Mod = np.empty((nMod, nMod, len(ID_subj)), dtype='float32')
+            SC_Mod = np.empty((nMod, nMod, len(ID_subj)), dtype='float32')
+        
+            for i, j in product(range(nMod), range(nMod)):
+                idx_i, idx_j = np.ix_(sq(modules_idx[i]), sq(modules_idx[j]))
+        except:
+            print(nMod,i,j)
+            
+ idx_i, idx_j = np.ix_(sq(modules_idx[i]), sq(modules_idx[28]))           
+            
