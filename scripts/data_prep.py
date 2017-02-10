@@ -48,7 +48,7 @@ def generate_FC(ID_subj):
     for i, idx in enumerate(ID_subj):
         folder_path = os.path.join(aging_data_dir, idx)
         time_series = np.load(os.path.join(folder_path, 'time_series.npy'))
-        fc = np.corrcoef(time_series.T)
+        fc = np.corrcoef(time_series)
 
         fc = np.nan_to_num(fc)
 

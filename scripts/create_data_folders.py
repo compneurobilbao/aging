@@ -13,7 +13,6 @@ import aging as ag
 import scipy.io as sio
 import numpy as np
 
-
 data_path = os.path.join(ag.__path__[0], 'data')
 aging_data_dir = os.path.join(data_path, 'subjects')
 container_data_dir = os.path.join(data_path, 'container_data')  # ID_subj,FCpil
@@ -85,14 +84,14 @@ def order_data_new():
     dst_dir = os.listdir(aging_data_dir)
     dst_dir.sort()
 
-    src_dir_fc = os.listdir(gsr_fc)
-    src_dir_fc.sort()
+    src_dir_sc = os.listdir(gsr_sc)
+    src_dir_sc.sort()
 
     # src_dir_sc = os.listdir(gsr_sc)
     # src_dir_sc.sort()
     # src_dir_sc == src_dir_fc == True
 
-    for i, file in enumerate(src_dir_fc):
+    for i, file in enumerate(src_dir_sc):
         print(file)
         dst_path = os.path.join(aging_data_dir, dst_dir[i], 'time_series.npy')
         if not os.path.exists(dst_path):
@@ -109,13 +108,7 @@ def order_data_new():
             sc_matrix = np.loadtxt(os.path.join(gsr_sc, file), dtype='int16')
             np.save(os.path.join(aging_data_dir,
                                  dst_dir[i],
-                                 'fiber_num.npy'), sc_matrix)
+                                 'fiber_num'), sc_matrix)
             silent_remove(os.path.join(aging_data_dir,
                                        dst_dir[i],
                                        'fiber_num.mat'))
-
-
-
-    
-    
-    
