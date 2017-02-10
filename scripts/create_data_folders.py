@@ -76,12 +76,12 @@ def order_data_old():
     copy_full_tree(life_span_path, aging_data_dir)
 
 
-gsr_sc = '/home/asier/Desktop/aging_final_data/sc_networks'
-gsr_fc = '/home/asier/Desktop/aging_final_data/ts_gsr'
-
-
 # Module for data preparation (NEW) - Modify the OLD one
 def order_data_new():
+
+    gsr_sc = '/home/asier/Desktop/aging_final_data/sc_networks'
+    gsr_fc = '/home/asier/Desktop/aging_final_data/ts_gsr'
+
     dst_dir = os.listdir(aging_data_dir)
     dst_dir.sort()
 
@@ -94,19 +94,25 @@ def order_data_new():
 
     for i, file in enumerate(src_dir_fc):
         print(file)
-        fc_matrix = np.loadtxt(os.path.join(gsr_fc, file), dtype='float32')
-        np.save(os.path.join(aging_data_dir, dst_dir[i], 'time_series.npy'),
-                fc_matrix)
-        silent_remove(os.path.join(aging_data_dir,
-                                   dst_dir[i],
-                                   'time_series.mat'))
+        dst_path = os.path.join(aging_data_dir, dst_dir[i], 'time_series.npy')
+        if not os.path.exists(dst_path):
+            fc_matrix = np.loadtxt(os.path.join(gsr_fc, file), dtype='float32')
+            np.save(os.path.join(aging_data_dir,
+                                 dst_dir[i],
+                                 'time_series.npy'), fc_matrix)
+            silent_remove(os.path.join(aging_data_dir,
+                                       dst_dir[i],
+                                       'time_series.mat'))
 
-        sc_matrix = np.loadtxt(os.path.join(gsr_sc, file), dtype='int16')
-        np.save(os.path.join(aging_data_dir, dst_dir[i], 'fiber_num.npy'),
-                sc_matrix)
-        silent_remove(os.path.join(aging_data_dir,
-                                   dst_dir[i],
-                                   'fiber_num.mat'))
+        dst_path = os.path.join(aging_data_dir, dst_dir[i], 'fiber_num.npy')
+        if not os.path.exists(dst_path):
+            sc_matrix = np.loadtxt(os.path.join(gsr_sc, file), dtype='int16')
+            np.save(os.path.join(aging_data_dir,
+                                 dst_dir[i],
+                                 'fiber_num.npy'), sc_matrix)
+            silent_remove(os.path.join(aging_data_dir,
+                                       dst_dir[i],
+                                       'fiber_num.mat'))
 
 
 
