@@ -111,13 +111,13 @@ def generate_mod(nMod, FC_matrix, SC_matrix, modules_ordered, ID_subj):
             idx_i, idx_j = np.ix_(sq(modules_idx[i]), sq(modules_idx[j]))
 
         _A = FC_matrix[idx_i, idx_j, :]
-        while _A.shape[0] != len(ID_subj):
+        while _A.ndim != 1:
             _A = np.sum(_A, 0)
         FC_Mod[i, j, :] = _A / (len(modules_idx[i]) * len(modules_idx[j]))
         FC_Mod[j, i, :] = FC_Mod[i, j, :]
 
         _B = SC_matrix[idx_i, idx_j, :]
-        while _B.shape[0] != len(ID_subj):
+        while _B.ndim != 1:
             _B = np.sum(_B, 0)
         SC_Mod[i, j, :] = _B / (len(modules_idx[i]) * len(modules_idx[j]))
         SC_Mod[j, i, :] = SC_Mod[i, j, :]
