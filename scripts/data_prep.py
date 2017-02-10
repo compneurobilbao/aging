@@ -81,9 +81,11 @@ def generate_data_containers():
 
 def remove_corrupted_rois(FC_matrix, SC_matrix):
     ROI_part = np.loadtxt(os.path.join(container_data_dir,
-                                       'rois_full_inside_ventricles.txt'))
+                                       'rois_full_inside_ventricles.txt'),
+                          dtype='int')
     ROI_in = np.loadtxt(os.path.join(container_data_dir,
-                                     'rois_part_inside_ventricles.txt'))
+                                     'rois_part_inside_ventricles.txt'),
+                        dtype='int')
     ROI_2ex = np.concatenate((ROI_part, ROI_in), axis=0)
 
     FC_matrix[ROI_2ex, :, :] = 0
