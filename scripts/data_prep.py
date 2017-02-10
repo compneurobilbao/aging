@@ -127,6 +127,21 @@ def generate_data_containers():
     generate_age_sex_ID()
 
 
+def remove_corrupted_rois(FC_matrix, SC_matrix):
+    ROI_part = np.loadtxt(os.path.join(container_data_dir,
+                                       'rois_full_inside_ventricles.txt'))
+    ROI_in = np.loadtxt(os.path.join(container_data_dir,
+                                     'rois_part_inside_ventricles.txt'))
+    ROI_2ex = np.concatenate((ROI_part, ROI_in), axis=0)
+
+    FC_matrix[ROI_2ex, :, :] = 0
+    FC_matrix[:, ROI_2ex, :] = 0
+    SC_matrix[ROI_2ex, :, :] = 0
+    SC_matrix[:, ROI_2ex, :] = 0
+
+    return FC_matrix, SC_matrix
+
+
 def generate_mod(nMod, FC_matrix, SC_matrix, modules_ordered, ID_subj):
     from numpy import squeeze as sq
 
@@ -142,13 +157,15 @@ def generate_mod(nMod, FC_matrix, SC_matrix, modules_ordered, ID_subj):
             idx_i, idx_j = np.ix_(sq(modules_idx[i]), sq(modules_idx[j]))
 
         _A = FC_matrix[idx_i, idx_j, :]
-        FC_Mod[i, j, :] = np.sum(np.sum((_A))) / \
-                                (len(modules_idx[i]) * len(modules_idx[j]))
+        while _A.shape[0] != len(ID_subj):
+            _A = np.sum(_A, 0)
+        FC_Mod[i, j, :] = _A / (len(modules_idx[i]) * len(modules_idx[j]))
         FC_Mod[j, i, :] = FC_Mod[i, j, :]
 
         _B = SC_matrix[idx_i, idx_j, :]
-        SC_Mod[i, j, :] = np.sum(np.sum((_B))) / \
-                                (len(modules_idx[i]) * len(modules_idx[j]))
+        while _B.shape[0] != len(ID_subj):
+            _B = np.sum(_B, 0)
+        SC_Mod[i, j, :] = _B / (len(modules_idx[i]) * len(modules_idx[j]))
         SC_Mod[j, i, :] = SC_Mod[i, j, :]
 
     np.savez(os.path.join(mod_data_dir, 'mod_{}'.format(nMod)),
@@ -166,12 +183,15 @@ def build_FC_SC_mods():
     if not os.path.exists(FC_SC_matrix):
         FC_matrix = generate_FC(ID_subj)
         SC_matrix = generate_SC(ID_subj)
+        FC_matrix, SC_matrix = remove_corrupted_rois(FC_matrix, SC_matrix)
         np.savez(FC_SC_matrix, FC_matrix=FC_matrix, SC_matrix=SC_matrix)
     else:
         FC_SC_matrix = np.load(FC_SC_matrix)
         FC_matrix = FC_SC_matrix.f.FC_matrix
         SC_matrix = FC_SC_matrix.f.SC_matrix
 
+    FC_matrix, SC_matrix
+        
     partition_data = sio.loadmat(os.path.join(container_data_dir,
                                               'partition_ordered.mat'))
     modules_ordered = partition_data['modules_ordered']
