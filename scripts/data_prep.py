@@ -89,8 +89,7 @@ def generate_age_sex_ID():
     return
 
 
-def generate_FC():
-    ID_subj = np.load(os.path.join(container_data_dir, 'ID_subj.npy'))
+def generate_FC(ID_subj):
 
     FC_matrix = np.empty((2514, 2514, len(ID_subj)), dtype='float32')
 
@@ -106,8 +105,7 @@ def generate_FC():
     return FC_matrix
 
 
-def generate_SC():
-    ID_subj = np.load(os.path.join(container_data_dir, 'ID_subj.npy'))
+def generate_SC(ID_subj):
 
     SC_matrix = np.empty((2514, 2514, len(ID_subj)), dtype='float32')
 
@@ -144,15 +142,17 @@ def generate_mod(nMod, FC_matrix, SC_matrix, modules_ordered, ID_subj):
             idx_i, idx_j = np.ix_(sq(modules_idx[i]), sq(modules_idx[j]))
 
         _A = FC_matrix[idx_i, idx_j, :]
-        FC_Mod[i, j, :] = np.sum(_A, (0, 1)) / (len(modules_idx[i]) * len(modules_idx[j]))
+        FC_Mod[i, j, :] = np.sum(np.sum((_A))) / \
+                                (len(modules_idx[i]) * len(modules_idx[j]))
         FC_Mod[j, i, :] = FC_Mod[i, j, :]
 
         _B = SC_matrix[idx_i, idx_j, :]
-        SC_Mod[i, j, :] = np.sum(_B, (0, 1)) / (len(modules_idx[i]) * len(modules_idx[j]))
+        SC_Mod[i, j, :] = np.sum(np.sum((_B))) / \
+                                (len(modules_idx[i]) * len(modules_idx[j]))
         SC_Mod[j, i, :] = SC_Mod[i, j, :]
 
     np.savez(os.path.join(mod_data_dir, 'mod_{}'.format(nMod)),
-             'FC_Mod', 'SC_Mod')
+             FC_Mod=FC_Mod, SC_Mod=SC_Mod)
 
 
 def build_FC_SC_mods():
@@ -160,28 +160,38 @@ def build_FC_SC_mods():
     if not os.path.exists(mod_data_dir):
         os.makedirs(mod_data_dir)
 
-    sh_ID_subj = np.load(os.path.join(container_data_dir, 'ID_subj.npy'))
+    ID_subj = np.load(os.path.join(container_data_dir, 'ID_subj.npy'))
 
-    sh_FC_matrix = generate_FC()
-    sh_SC_matrix = generate_SC()
+    FC_SC_matrix = os.path.join(container_data_dir, 'FC_SC_matrix.npz')
+    if not os.path.exists(FC_SC_matrix):
+        FC_matrix = generate_FC(ID_subj)
+        SC_matrix = generate_SC(ID_subj)
+        np.savez(FC_SC_matrix, FC_matrix=FC_matrix, SC_matrix=SC_matrix)
+    else:
+        FC_SC_matrix = np.load(FC_SC_matrix)
+        FC_matrix = FC_SC_matrix.f.FC_matrix
+        SC_matrix = FC_SC_matrix.f.SC_matrix
 
     partition_data = sio.loadmat(os.path.join(container_data_dir,
                                               'partition_ordered.mat'))
-    sh_modules_ordered = partition_data['modules_ordered']
+    modules_ordered = partition_data['modules_ordered']
 
     for nMod in range(2, 1001):
-        if not os.path.exists(os.path.join(mod_data_dir, 'mod_{}'.format(nMod))):
+        if not os.path.exists(os.path.join(mod_data_dir,
+                                           'mod_{}.npz'.format(nMod))):
             generate_mod(nMod,
-                         sh_FC_matrix,
-                         sh_SC_matrix,
-                         sh_modules_ordered,
-                         sh_ID_subj)
+                         FC_matrix,
+                         SC_matrix,
+                         modules_ordered,
+                         ID_subj)
 
 
 if __name__ == "__main__":
     import sys
 
-    generate_data_containers()
+    if not os.path.exists(os.path.join(container_data_dir,
+                                       'ID_subj.npy')):
+        generate_data_containers()
     print('Data containers generated')
     build_FC_SC_mods()
     print('mods generated')
