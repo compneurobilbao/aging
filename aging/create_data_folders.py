@@ -1,14 +1,6 @@
 from __future__ import absolute_import, division, print_function
-# Ugly hack to allow absolute import from the root folder
-# whatever its name is. Please forgive the heresy.
-if __name__ == "__main__" and __package__ is None:
-    import sys, os
-    os.chdir(os.path.realpath(__file__))
-    sys.path.insert(0, os.path.abspath('..'))
 
-from distutils.dir_util import copy_tree
-from itertools import product
-
+import os
 import aging as ag
 import scipy.io as sio
 import numpy as np
@@ -29,7 +21,7 @@ def silent_remove(filename):
     except OSError:
         pass
 
-    
+ 
 def add_info_from_file(info_file, old_or_young='old'):
 
     for i in range(len(info_file[old_or_young+'Info'])):
@@ -47,6 +39,7 @@ def add_info_from_file(info_file, old_or_young='old'):
 
 
 def copy_full_tree(src, dst):
+    from distutils.dir_util import copy_tree
     for root, dirs, files in os.walk(src):
         for dr in dirs:
             os.makedirs(os.path.join(dst, dr))
