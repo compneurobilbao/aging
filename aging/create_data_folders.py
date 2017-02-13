@@ -123,3 +123,22 @@ def create_motion_info():
                 dst_path = os.path.join(aging_data_dir, dst_dir[i])
                 np.save(os.path.join(dst_path, 'fmri_motion'), row[1])
                 np.save(os.path.join(dst_path, 'dti_motion'), row[2])
+
+
+def create_motion_containers():
+
+    dst_dir = os.listdir(aging_data_dir)
+    dst_dir.sort()
+
+    fmri_motion = np.zeros(len(dst_dir))
+    dti_motion = np.zeros(len(dst_dir))
+
+    for i, dst in enumerate(dst_dir):
+        dst_path = os.path.join(aging_data_dir, dst)
+        fmri_motion[i] = np.load(os.path.join(dst_path,
+                                              'fmri_motion.npy')).tolist()
+        dti_motion[i] = np.load(os.path.join(dst_path,
+                                             'dti_motion.npy')).tolist()
+
+    np.save(os.path.join(container_data_dir, 'fmri_motion'), fmri_motion)
+    np.save(os.path.join(container_data_dir, 'dti_motion'), dti_motion)
