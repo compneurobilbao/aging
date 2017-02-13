@@ -21,7 +21,7 @@ def silent_remove(filename):
     except OSError:
         pass
 
- 
+
 def add_info_from_file(info_file, old_or_young='old'):
 
     for i in range(len(info_file[old_or_young+'Info'])):
@@ -105,3 +105,21 @@ def order_data_new():
             silent_remove(os.path.join(aging_data_dir,
                                        dst_dir[i],
                                        'fiber_num.mat'))
+
+
+def create_motion_info():
+    import csv
+
+    dst_dir = os.listdir(aging_data_dir)
+    dst_dir.sort()
+    src = '/home/asier/Desktop/aging_final_data/'
+
+    file = os.path.join(src, 'life_span_motion_variables.csv')
+
+    with open(file, 'r') as csvfile:
+        spamreader = csv.reader(csvfile)
+        for i, row in enumerate(spamreader):
+            if row[0] != 'Code':
+                dst_path = os.path.join(aging_data_dir, dst_dir[i])
+                np.save(os.path.join(dst_path, 'fmri_motion'), row[1])
+                np.save(os.path.join(dst_path, 'dti_motion'), row[2])
