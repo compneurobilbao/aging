@@ -5,6 +5,7 @@ import os
 import aging as ag
 import numpy as np
 from scipy import stats, linalg
+import pickle
 
 data_path = os.path.join(ag.__path__[0], 'data')
 aging_data_dir = os.path.join(data_path, 'subjects')
@@ -81,6 +82,11 @@ def p_corr(C):
     return P_corr
 
 
+def partial(Mod_data, age, motion):
+    value = p_corr(np.column_stack((Mod_data, age, motion)))[0, 1]
+    return np.nan_to_num(value)
+                             
+
 def internal():
     # TODO: Significant pvlues for partial_corr
     internal_fc_cn = ['' for j in range(MAX_PART)]
@@ -101,22 +107,24 @@ def internal():
 
         for i in range(nMod):
             # (out-degree)
-            internal_fc_cn[nMod][i] = p_corr(np.column_stack((FC_Mod[i, i, :],
-                                                              age,
-                                                              fmri_motion)))[0, 1]
+            internal_fc_cn[nMod][i] = partial(FC_Mod[i, i, :],
+                                              age,
+                                              fmri_motion)
 
-            internal_sc_cn[nMod][i] = p_corr(np.column_stack((SC_Mod[i, i, :],
-                                                              age,
-                                                              dti_motion)))[0, 1]
+            internal_sc_cn[nMod][i] = partial(SC_Mod[i, i, :],
+                                              age,
+                                              dti_motion)
 
-    np.save(os.path.join(container_data_dir, 'internal_fc_cn'), internal_fc_cn)
-    np.save(os.path.join(container_data_dir, 'internal_sc_cn'), internal_fc_cn)
+    with open(os.path.join(container_data_dir, 'internal_fc_cn'), "wb") as f:
+        pickle.dump(internal_fc_cn, f)
+    with open(os.path.join(container_data_dir, 'internal_sc_cn'), "wb") as f:
+        pickle.dump(internal_sc_cn, f)
 
 
 def external():
     # TODO: Significant pvlues for partial_corr
-    internal_fc_cn = ['' for j in range(MAX_PART)]
-    internal_sc_cn = ['' for j in range(MAX_PART)]
+    external_fc_cn = ['' for j in range(MAX_PART)]
+    external_sc_cn = ['' for j in range(MAX_PART)]
 
     age = np.load(os.path.join(container_data_dir, 'age.npy'))
     dti_motion = np.load(os.path.join(container_data_dir, 'dti_motion.npy'))
@@ -128,24 +136,25 @@ def external():
         FC_Mod = data.f.FC_Mod
         SC_Mod = data.f.SC_Mod
 
-        internal_fc_cn[nMod] = np.zeros(nMod)
-        internal_sc_cn[nMod] = np.zeros(nMod)
+        external_fc_cn[nMod] = np.zeros(nMod)
+        external_sc_cn[nMod] = np.zeros(nMod)
 
-        FC_Mod_total_degree = np.zeros((nMod, len(age)))
-        SC_Mod_total_degree = np.zeros((nMod, len(age)))
+        SC_Mod_total_degree = np.sum(SC_Mod, 1)
+        FC_Mod_total_degree = np.sum(SC_Mod, 1)
 
         for i in range(nMod):
             # (out-degree)
-            FC_Mod_pil_out_degree[i, :] = FC_Mod[i, i, :]
-            SC_Mod_pil_out_degree[i, :] = SC_Mod[i, i, :]
+            FC_data = FC_Mod_total_degree[i, :] - FC_Mod[i, i, :]
+            external_fc_cn[nMod][i] = partial(FC_data,
+                                              age,
+                                              fmri_motion)
 
-            internal_fc_cn[nMod][i] = p_corr(np.column_stack((FC_Mod[i, i, :],
-                                                              age,
-                                                              fmri_motion)))[0, 1]
+            SC_data = SC_Mod_total_degree[i, :] - SC_Mod[i, i, :]
+            external_sc_cn[nMod][i] = partial(SC_data,
+                                              age,
+                                              dti_motion)
 
-            internal_sc_cn[nMod][i] = p_corr(np.column_stack((SC_Mod[i, i, :],
-                                                              age,
-                                                              dti_motion)))[0, 1]
-
-    np.save(os.path.join(container_data_dir, 'internal_fc_cn'), internal_fc_cn)
-    np.save(os.path.join(container_data_dir, 'internal_sc_cn'), internal_fc_cn)
+    with open(os.path.join(container_data_dir, 'internal_fc_cn'), "wb") as f:
+        pickle.dump(external_fc_cn, f)
+    with open(os.path.join(container_data_dir, 'internal_sc_cn'), "wb") as f:
+        pickle.dump(external_sc_cn, f)
