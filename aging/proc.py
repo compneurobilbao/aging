@@ -113,3 +113,39 @@ def internal():
     np.save(os.path.join(container_data_dir, 'internal_sc_cn'), internal_fc_cn)
 
 
+def external():
+    # TODO: Significant pvlues for partial_corr
+    internal_fc_cn = ['' for j in range(MAX_PART)]
+    internal_sc_cn = ['' for j in range(MAX_PART)]
+
+    age = np.load(os.path.join(container_data_dir, 'age.npy'))
+    dti_motion = np.load(os.path.join(container_data_dir, 'dti_motion.npy'))
+    fmri_motion = np.load(os.path.join(container_data_dir, 'fmri_motion.npy'))
+
+    for nMod in range(2, 999):
+        print(nMod)
+        data = np.load(os.path.join(mod_data_dir, 'mod_{}.npz'.format(nMod)))
+        FC_Mod = data.f.FC_Mod
+        SC_Mod = data.f.SC_Mod
+
+        internal_fc_cn[nMod] = np.zeros(nMod)
+        internal_sc_cn[nMod] = np.zeros(nMod)
+
+        FC_Mod_total_degree = np.zeros((nMod, len(age)))
+        SC_Mod_total_degree = np.zeros((nMod, len(age)))
+
+        for i in range(nMod):
+            # (out-degree)
+            FC_Mod_pil_out_degree[i, :] = FC_Mod[i, i, :]
+            SC_Mod_pil_out_degree[i, :] = SC_Mod[i, i, :]
+
+            internal_fc_cn[nMod][i] = p_corr(np.column_stack((FC_Mod[i, i, :],
+                                                              age,
+                                                              fmri_motion)))[0, 1]
+
+            internal_sc_cn[nMod][i] = p_corr(np.column_stack((SC_Mod[i, i, :],
+                                                              age,
+                                                              dti_motion)))[0, 1]
+
+    np.save(os.path.join(container_data_dir, 'internal_fc_cn'), internal_fc_cn)
+    np.save(os.path.join(container_data_dir, 'internal_sc_cn'), internal_fc_cn)
