@@ -77,7 +77,17 @@ def p_corr(C):
             P_corr[i, j] = corr
             P_corr[j, i] = corr
 
-    return P_corr
+    # SIGNIFICANCE TEST
+#    NN=size(X,1)-size(Z,2);
+#    
+#    tmp = 1 - P_corr.*P_corr
+#    tmp(tmp<0) = 0;		% prevent tmp<0 i.e. imag(t)~=0 
+#    t   = P_corr.*sqrt(max(NN-2,0)./tmp)
+#    
+#    sig = tcdf(t,NN-2)
+#    sig  = 2 * min(sig,1 - sig)
+
+    return P_corr#, sig
 
 
 def partial(Mod_data, age, motion):
