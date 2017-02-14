@@ -25,13 +25,11 @@ due.cite(Doi(""),
 MAX_PART = 2514
 
 
-
-
 def p_corr(C):
     """
     Partial Correlation in Python (clone of Matlab's partialcorr)
-    This uses the linear regression approach to compute the partial 
-    correlation (might be slow for a huge number of variables). The 
+    This uses the linear regression approach to compute the partial
+    correlation (might be slow for a huge number of variables). The
     algorithm is detailed here:
         http://en.wikipedia.org/wiki/Partial_correlation#Using_linear_regression
     Taking X and Y two variables of interest and Z the matrix with all the variable minus {X, Y},
@@ -59,7 +57,7 @@ def p_corr(C):
         P[i, j] contains the partial correlation of C[:, i] and C[:, j] controlling
         for the remaining variables in C.
     """
-    
+
     C = np.asarray(C)
     p = C.shape[1]
     P_corr = np.zeros((p, p), dtype=np.float)
@@ -72,21 +70,22 @@ def p_corr(C):
             beta_i = linalg.lstsq(C[:, idx], C[:, j])[0]
             beta_j = linalg.lstsq(C[:, idx], C[:, i])[0]
 
-            res_j = C[:, j] - C[:, idx].dot( beta_i)
+            res_j = C[:, j] - C[:, idx].dot(beta_i)
             res_i = C[:, i] - C[:, idx].dot(beta_j)
-            
+
             corr = stats.pearsonr(res_i, res_j)[0]
             P_corr[i, j] = corr
             P_corr[j, i] = corr
-        
+
     return P_corr
 
 
 def partial(Mod_data, age, motion):
     value = p_corr(np.column_stack((Mod_data, age, motion)))[0, 1]
     return np.nan_to_num(value)
-                             
 
+
+# TODO: Refact
 def internal():
     # TODO: Significant pvlues for partial_corr
     internal_fc_cn = ['' for j in range(MAX_PART)]
