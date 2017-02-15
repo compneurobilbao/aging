@@ -25,65 +25,53 @@ due.cite(Doi(""),
 MAX_PART = 2514
 
 
-def p_corr(C):
-    """
-    Partial Correlation in Python (clone of Matlab's partialcorr)
-    This uses the linear regression approach to compute the partial
-    correlation (might be slow for a huge number of variables). The
-    algorithm is detailed here:
-        http://en.wikipedia.org/wiki/Partial_correlation#Using_linear_regression
-    Taking X and Y two variables of interest and Z the matrix with all the variable minus {X, Y},
-    the algorithm can be summarized as
-        1) perform a normal linear least-squares regression with X as the target and Z as the predictor
-        2) calculate the residuals in Step #1
-        3) perform a normal linear least-squares regression with Y as the target and Z as the predictor
-        4) calculate the residuals in Step #3
-        5) calculate the correlation coefficient between the residuals from Steps #2 and #4; 
-        The result is the partial correlation between X and Y while controlling for the effect of Z
-    Date: Nov 2014
-    Author: Fabian Pedregosa-Izquierdo, f@bianp.net
-    Testing: Valentina Borghesani, valentinaborghesani@gmail.com
-    """
-    """
-    Returns the sample linear partial correlation coefficients between pairs of variables in C, controlling 
-    for the remaining variables in C.
-    Parameters
-    ----------
-    C : array-like, shape (n, p)
-        Array with the different variables. Each column of C is taken as a variable
-    Returns
-    -------
-    P : array-like, shape (p, p)
-        P[i, j] contains the partial correlation of C[:, i] and C[:, j] controlling
-        for the remaining variables in C.
-    """
+def p_corr(x, y, z):
+    # PARTCORRCOEF calculates the partial correlation between X and Y
+    # after removing the influence of Z.
 
-    C = np.asarray(C)
-    p = C.shape[1]
-    P_corr = np.zeros((p, p), dtype=np.float)
-    sig = np.zeros((p, p), dtype=np.float)
-    for i in range(p):
-        P_corr[i, i] = 1
-        for j in range(i+1, p):
-            idx = np.ones(p, dtype=np.bool)
-            idx[i] = False
-            idx[j] = False
-            beta_i = linalg.lstsq(C[:, idx], C[:, j])[0]
-            beta_j = linalg.lstsq(C[:, idx], C[:, i])[0]
+    #   ADAPTED FROM:
+    #    $Id: partcorrcoef.m 8351 2011-06-24 17:35:07Z carandraug $
+    #    Copyright (C) 2000-2002,2009 by Alois Schloegl <alois.schloegl@gmail.com>	
+    #    This function is part of the NaN-toolbox
+    #    http://pub.ist.ac.at/~schloegl/matlab/NaN/
+    
+    #    This program is free software; you can redistribute it and/or modify
+    #    it under the terms of the GNU General Public License as published by
+    #    the Free Software Foundation; either version 3 of the License, or
+    #    (at your option) any later version.
+    #
+    #    This program is distributed in the hope that it will be useful,
+    #    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    #    GNU General Public License for more details.
+    #
+    #    You should have received a copy of the GNU General Public License
+    #    along with this program; if not, write to the FSF
+    #    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
-            res_j = C[:, j] - C[:, idx].dot(beta_i)
-            res_i = C[:, i] - C[:, idx].dot(beta_j)
+    rxy = np.corrcoef(x, y)[0, 1]
+    rxz = np.corrcoef(x, z)[0, 1]
+    ryz = np.corrcoef(y, z)[0, 1]
 
-            coef, p_val = stats.pearsonr(res_i, res_j)
-            P_corr[i, j], sig[i, j] = coef, p_val
-            P_corr[j, i], sig[j, i] = coef, p_val
+    c = (rxy-rxz*ryz)/np.sqrt((1-rxz**2)*(1-ryz**2))
 
-    return P_corr, sig
+    # SIGNIFICANCE TEST
+    NN = x.shape[0] - 1
+    tmp = 1 - c * c
+
+    if tmp < 0:
+        tmp = 0  # prevent tmp<0 i.e. imag(t)~=0
+
+    t = c * np.sqrt(np.max((NN-2, 0)) / tmp)
+    v = stats.t.cdf(t, NN-2)
+    v = 2 * np.min((v, 1 - v))
+
+    return c, v
 
 
 def partial(Mod_data, age, motion):
-    value, sig = p_corr(np.column_stack((Mod_data, age, motion)))
-    return np.nan_to_num(value[0, 1]), np.nan_to_num(sig[0, 1])
+    value, sig = p_corr(Mod_data, age, motion)
+    return np.nan_to_num(value), np.nan_to_num(sig)
 
 
 def init_variables():
