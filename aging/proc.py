@@ -1,10 +1,9 @@
 from __future__ import absolute_import, division, print_function
-from itertools import product
 
 import os
 import aging as ag
 import numpy as np
-from scipy import stats, linalg
+from scipy import stats
 import pickle
 
 data_path = os.path.join(ag.__path__[0], 'data')
@@ -12,15 +11,6 @@ aging_data_dir = os.path.join(data_path, 'subjects')
 container_data_dir = os.path.join(data_path, 'container_data')  # ID_subj,FCpil
 mod_data_dir = os.path.join(data_path, 'mods')
 
-from .due import due, Doi
-
-# Use duecredit (duecredit.org) to provide a citation to relevant work to
-# be cited. This does nothing, unless the user has duecredit installed,
-# And calls this with duecredit (as in `python -m duecredit script.py`):
-due.cite(Doi(""),
-         description="",
-         tags=[""],
-         path='aging')
 
 MAX_PART = 2514
 
@@ -31,10 +21,10 @@ def p_corr(x, y, z):
 
     #   ADAPTED FROM:
     #    $Id: partcorrcoef.m 8351 2011-06-24 17:35:07Z carandraug $
-    #    Copyright (C) 2000-2002,2009 by Alois Schloegl <alois.schloegl@gmail.com>	
+    #    Copyright(C)2000-2002,2009 by Alois Schloegl alois.schloegl@gmail.com
     #    This function is part of the NaN-toolbox
     #    http://pub.ist.ac.at/~schloegl/matlab/NaN/
-    
+
     #    This program is free software; you can redistribute it and/or modify
     #    it under the terms of the GNU General Public License as published by
     #    the Free Software Foundation; either version 3 of the License, or
