@@ -125,15 +125,44 @@ def compute_connectivity(internal=False, external=False):
 
     if internal:
         with open(os.path.join(container_data_dir,
-                               'internal_fc_cn_pn'), "wb") as f:
+                               'internal_fc_cn_pn'), 'wb') as f:
             pickle.dump([int_fc_cn, int_fc_pn], f)
         with open(os.path.join(container_data_dir,
-                               'internal_sc_cn_pn'), "wb") as f:
+                               'internal_sc_cn_pn'), 'wb') as f:
             pickle.dump([int_sc_cn, int_sc_pn], f)
     if external:
         with open(os.path.join(container_data_dir,
-                               'external_fc_cn_pn'), "wb") as f:
+                               'external_fc_cn_pn'), 'wb') as f:
             pickle.dump([ext_fc_cn, ext_fc_pn], f)
         with open(os.path.join(container_data_dir,
-                               'external_sc_cn_pn'), "wb") as f:
+                               'external_sc_cn_pn'), 'wb') as f:
             pickle.dump([ext_sc_cn, ext_sc_pn], f)
+
+
+def get_descriptors():
+    
+    int_fc_cn, int_fc_pn = pickle.load(open(os.path.join(container_data_dir,
+                                                 'internal_fc_cn_pn'), 'rb'))
+    ext_fc_cn, ext_fc_pn = pickle.load(open(os.path.join(container_data_dir,
+                                                 'external_fc_cn_pn'), 'rb'))
+    
+    int_sc_cn, int_sc_pn = pickle.load(open(os.path.join(container_data_dir,
+                                                 'internal_sc_cn_pn'), 'rb'))
+    ext_sc_cn, ext_sc_pn = pickle.load(open(os.path.join(container_data_dir,
+                                                 'external_sc_cn_pn'), 'rb'))
+    
+    
+    # check pvalues and get descriptors from nMod npz
+    
+    for i, values_list in enumerate(ext_fc_cn[2:]):
+        if max(values_list)>0.34:
+            print(max(values_list), ext_fc_pn[i+2][np.argmax(np.array(values_list))])
+        
+    
+    
+    
+    
+    
+    
+    
+    
