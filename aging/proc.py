@@ -80,15 +80,15 @@ def compute_connectivity(internal=False, external=False):
     age, dti_motion, fmri_motion = init_variables()
 
     if internal:
-        int_fc_cn = ['' for j in range(MAX_PART)]
-        int_sc_cn = ['' for j in range(MAX_PART)]
-        int_fc_pn = ['' for j in range(MAX_PART)]
-        int_sc_pn = ['' for j in range(MAX_PART)]
+        int_fc_cn = np.array([np.empty(j) for j in range(MAX_PART)])
+        int_sc_cn = np.array([np.empty(j) for j in range(MAX_PART)])
+        int_fc_pn = np.array([np.empty(j) for j in range(MAX_PART)])
+        int_sc_pn = np.array([np.empty(j) for j in range(MAX_PART)])
     if external:
-        ext_fc_cn = ['' for j in range(MAX_PART)]
-        ext_sc_cn = ['' for j in range(MAX_PART)]
-        ext_fc_pn = ['' for j in range(MAX_PART)]
-        ext_sc_pn = ['' for j in range(MAX_PART)]
+        ext_fc_cn = np.array([np.empty(j) for j in range(MAX_PART)])
+        ext_sc_cn = np.array([np.empty(j) for j in range(MAX_PART)])
+        ext_fc_pn = np.array([np.empty(j) for j in range(MAX_PART)])
+        ext_sc_pn = np.array([np.empty(j) for j in range(MAX_PART)])
 
     for nMod in range(2, 999):
         print(nMod)
