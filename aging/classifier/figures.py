@@ -78,9 +78,9 @@ plt.savefig('/home/asier/Desktop/AGING/motion_correction/figures/fig5/panel4.eps
 ###############
 # PANEL 5- prediction MAE ## ASK WHAT TO DO
 
-print(np.argmin(results[1:114])) # 25 descriptors
+print(np.argmin(results[1:114]))+1 # 25 descriptors
 print(np.min(results[1:114])) # 6.96142488891
-
+min_error = np.min(results[1:114])
 
 
 number_of_descriptors = np.argmin(results[1:114])
@@ -95,7 +95,7 @@ for i in range(100):
     y_pred = lm.predict(X_test)
     m = metrics.mean_absolute_error(y_test, y_pred)
     print(m)
-    if (m < np.min(results[1:])+0.1) and (m > np.min(results[1:])-0.1): break
+    if (m < min_error+0.1) and (m > min_error-0.1): break
 
 import scipy
 print(scipy.stats.pearsonr(y_test, y_pred))

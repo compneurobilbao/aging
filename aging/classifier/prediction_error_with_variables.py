@@ -30,7 +30,34 @@ sigma = np.squeeze(np.load('sigma_ext_int_mae.npy'))
 print(np.argmin(results[1:114])) # 
 print(np.min(results[1:114])) # 
 
-            
+####### Stability check for weights of classifier
+number_of_descriptors = np.argmin(results[1:114])+1 #WARNING! is 1:, so +1
+y = np.array(pd.read_csv('age.csv', header=None))
+X = ordered_data[:,:number_of_descriptors]
+
+coef_matrix = np.empty((number_of_descriptors, y.shape[0]))
+
+for i in range(y.shape[0]):
+    y_test = y[i]
+    y_train = np.delete(y, (i), axis = 0)
+    X_test = X[i,:]
+    X_train = np.delete(X, (i), axis = 0)
+    
+    lm = LinearRegression()
+    lm.fit(X_train, y_train)
+    coef_matrix[:, i] = lm.coef_[0]  
+        
+
+coef_std = np.std(coef_matrix, axis = 1)
+coef_mean = np.mean(coef_matrix, axis = 1)
+plt.plot(coef_std/coef_mean)
+
+weighted_desc = np.mean(X, axis = 0) * coef_mean
+plt.plot(weighted_desc)
+
+
+
+####### classifier error wrt age            
             
 number_of_descriptors = np.argmin(results[1:114])+1 #WARNING! is 1:, so +1
 y = np.array(pd.read_csv('age.csv', header=None))
