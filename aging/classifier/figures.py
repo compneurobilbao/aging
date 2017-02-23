@@ -106,3 +106,7 @@ plt.xlabel("predicted age")
 plt.ylabel("real age")
 plt.savefig('/home/asier/Desktop/AGING/motion_correction/figures/fig5/panel5.eps', format='eps', dpi=1000)
  
+
+################# data migration
+import scipy.io as sio
+sio.savemat('ordered_data.mat', {'ordered_desc':ordered_data})
