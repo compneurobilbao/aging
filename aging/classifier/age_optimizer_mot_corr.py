@@ -10,6 +10,8 @@ import os
 import numpy  as np
 import seaborn as sns
 import pandas as pd
+import matplotlib.pyplot as plt
+
 
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import KFold
@@ -17,8 +19,9 @@ from sklearn import metrics
 from sklearn.linear_model import LinearRegression
 from sklearn.cross_validation import train_test_split
 
-import matplotlib.pyplot as plt
-os.chdir('/home/asier/Desktop/AGING/motion_correction')
+import aging as ag
+os.chdir(os.path.join(ag.__path__[0], 'classifier'))
+
 
 #####################
 ### FIGURES ###
