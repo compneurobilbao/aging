@@ -19,7 +19,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.cross_validation import train_test_split
 
 import matplotlib.pyplot as plt
-os.chdir('/home/asier/Desktop/AGING/motion_correction')
+os.chdir(os.path.join(ag.__path__[0], 'classifier'))
 
 
 ordered_data = np.load('ordered_data_ext_int_mae.npy')
