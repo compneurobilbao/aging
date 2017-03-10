@@ -110,3 +110,20 @@ plt.savefig('/home/asier/Desktop/AGING/motion_correction/figures/fig5/panel5.eps
 ################# data migration
 import scipy.io as sio
 sio.savemat('ordered_data.mat', {'ordered_desc':ordered_data})
+
+###############
+# PANEL 6- prediction MAE ## ASK WHAT TO DO
+
+from nilearn import image
+from nilearn import plotting as plt
+import matplotlib.pyplot
+import nibabel as nib
+import os
+import numpy as np
+import aging as ag
+
+
+os.chdir(os.path.join(ag.__path__[0], 'classifier'))
+statmap = nib.load('netMode_SF_intExt_participation.nii')
+# First plot the map for the PCC: index 4 in the atlas
+plt.plot_glass_brain(statmap, threshold=0, colorbar=True,cmap=matplotlib.pyplot.cm.autumn, display_mode='lyrz', vmax = 4, vmin = 0, output_file = 'panel6.png')

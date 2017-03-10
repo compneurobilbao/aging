@@ -8,3 +8,5 @@ aging/data/*
 !aging/data/container_data/rois_full_inside_ventricles.txt
 !aging/data/container_data/partition_ordered.mat
 
+*.nii
+.spyproject/*
