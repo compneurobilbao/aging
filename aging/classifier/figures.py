@@ -78,12 +78,12 @@ plt.savefig('/home/asier/Desktop/AGING/motion_correction/figures/fig5/panel4.eps
 ###############
 # PANEL 5- prediction MAE ## ASK WHAT TO DO
 
-print(np.argmin(results[1:114]))+1 # 25 descriptors
+print(np.argmin(results[1:114]))# 25 descriptors
 print(np.min(results[1:114])) # 6.96142488891
 min_error = np.min(results[1:114])
 
 
-number_of_descriptors = np.argmin(results[1:114])
+number_of_descriptors = np.argmin(results[1:114]) + 1 # +1 !!!
 y = pd.read_csv('age.csv', header=None)
 X = ordered_data[:,:number_of_descriptors]
 
