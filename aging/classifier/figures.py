@@ -126,4 +126,4 @@ import aging as ag
 os.chdir(os.path.join(ag.__path__[0], 'classifier'))
 statmap = nib.load('netMode_SF_intExt_participation.nii')
 # First plot the map for the PCC: index 4 in the atlas
-plt.plot_glass_brain(statmap, threshold=0, colorbar=True,cmap=matplotlib.pyplot.cm.autumn, display_mode='lyrz', vmax = 4, vmin = 0, output_file = 'panel6.png')
+plt.plot_glass_brain(statmap, threshold=0, colorbar=True,cmap=matplotlib.pyplot.cm.autumn, display_mode='lyrz', vmax = 3, vmin = 0, output_file = 'panel6.png')
