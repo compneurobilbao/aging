@@ -12,7 +12,7 @@ container_data_dir = os.path.join(data_path, 'container_data')  # ID_subj,FCpil
 mod_data_dir = os.path.join(data_path, 'mods')
 
 
-MAX_PART = 2514
+MAX_PART = 1000
 
 
 def p_corr(x, y, z):
@@ -80,15 +80,15 @@ def compute_connectivity(internal=False, external=False):
     age, dti_motion, fmri_motion = init_variables()
 
     if internal:
-        int_fc_cn = np.array([np.empty(j) for j in range(MAX_PART)])
-        int_sc_cn = np.array([np.empty(j) for j in range(MAX_PART)])
-        int_fc_pn = np.array([np.empty(j) for j in range(MAX_PART)])
-        int_sc_pn = np.array([np.empty(j) for j in range(MAX_PART)])
+        int_fc_cn = np.array([np.zeros(j) for j in range(MAX_PART)])
+        int_sc_cn = np.array([np.zeros(j) for j in range(MAX_PART)])
+        int_fc_pn = np.array([np.zeros(j) for j in range(MAX_PART)])
+        int_sc_pn = np.array([np.zeros(j) for j in range(MAX_PART)])
     if external:
-        ext_fc_cn = np.array([np.empty(j) for j in range(MAX_PART)])
-        ext_sc_cn = np.array([np.empty(j) for j in range(MAX_PART)])
-        ext_fc_pn = np.array([np.empty(j) for j in range(MAX_PART)])
-        ext_sc_pn = np.array([np.empty(j) for j in range(MAX_PART)])
+        ext_fc_cn = np.array([np.zeros(j) for j in range(MAX_PART)])
+        ext_sc_cn = np.array([np.zeros(j) for j in range(MAX_PART)])
+        ext_fc_pn = np.array([np.zeros(j) for j in range(MAX_PART)])
+        ext_sc_pn = np.array([np.zeros(j) for j in range(MAX_PART)])
 
     for nMod in range(2, 999):
         print(nMod)
@@ -107,7 +107,7 @@ def compute_connectivity(internal=False, external=False):
             ext_sc_cn[nMod] = np.zeros(nMod)
             ext_sc_pn[nMod] = np.zeros(nMod)
             SC_Mod_total_degree = np.sum(SC_Mod, 1)
-            FC_Mod_total_degree = np.sum(SC_Mod, 1)
+            FC_Mod_total_degree = np.sum(FC_Mod, 1)
 
         for i in range(nMod):
             if internal:
@@ -157,12 +157,9 @@ def get_descriptors():
     for i, values_list in enumerate(ext_fc_cn[2:]):
         if max(values_list)>0.34:
             print(max(values_list), ext_fc_pn[i+2][np.argmax(np.array(values_list))])
-        
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
