@@ -34,3 +34,14 @@ for i, j in product(range(nMod), range(nMod)):
     FC_Mod[j, i, :] = FC_Mod[i, j, :]
 
 FC_Mod[0,0,0]
+
+
+for nMod in range(2, 1001):
+    print(nMod)
+    if not os.path.exists(os.path.join(mod_data_dir,
+                                       'mod_{}.npz'.format(nMod))):
+        generate_mod(nMod,
+                     FC_matrix,
+                     SC_matrix,
+                     modules_info,
+                     ID_subj)
