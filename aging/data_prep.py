@@ -87,10 +87,10 @@ def remove_corrupted_rois(FC_matrix, SC_matrix):
     return FC_matrix, SC_matrix
 
 
-def generate_mod(nMod, FC_matrix, SC_matrix, modules_ordered, ID_subj):
+def generate_mod(nMod, FC_matrix, SC_matrix, modules_info, ID_subj):
     from numpy import squeeze as sq
 
-    modules_idx = modules_ordered[nMod-1, :nMod]-1  # -1 due to 0 indexing
+    modules_idx = modules_info[nMod-1, :nMod]-1  # -1 due to 0 indexing
 
     FC_Mod = np.empty((nMod, nMod, len(ID_subj)), dtype='float32')
     SC_Mod = np.empty((nMod, nMod, len(ID_subj)), dtype='float32')
@@ -136,8 +136,8 @@ def build_FC_SC_mods():
         SC_matrix = FC_SC_matrix.f.SC_matrix
 
     partition_data = sio.loadmat(os.path.join(container_data_dir,
-                                              'partition_ordered.mat'))
-    modules_ordered = partition_data['modules_ordered']
+                                              'partition_2_2514.mat'))
+    modules_info = partition_data['modules_20_60']
 
     for nMod in range(2, 1001):
         if not os.path.exists(os.path.join(mod_data_dir,
@@ -145,7 +145,7 @@ def build_FC_SC_mods():
             generate_mod(nMod,
                          FC_matrix,
                          SC_matrix,
-                         modules_ordered,
+                         modules_info,
                          ID_subj)
 
 
