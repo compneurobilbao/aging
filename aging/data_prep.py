@@ -104,13 +104,13 @@ def generate_mod(nMod, FC_matrix, SC_matrix, modules_info, ID_subj):
         _A = FC_matrix[idx_i, idx_j, :]
         while _A.ndim != 1:
             _A = np.sum(_A, 0)
-        FC_Mod[i, j, :] = _A # / (len(modules_idx[i]) * len(modules_idx[j]))
+        FC_Mod[i, j, :] = _A  # / (len(modules_idx[i]) * len(modules_idx[j]))
         FC_Mod[j, i, :] = FC_Mod[i, j, :]
 
         _B = SC_matrix[idx_i, idx_j, :]
         while _B.ndim != 1:
             _B = np.sum(_B, 0)
-        SC_Mod[i, j, :] = _B # / (len(modules_idx[i]) * len(modules_idx[j]))
+        SC_Mod[i, j, :] = _B  # / (len(modules_idx[i]) * len(modules_idx[j]))
         SC_Mod[j, i, :] = SC_Mod[i, j, :]
 
     np.savez(os.path.join(mod_data_dir, 'mod_{}'.format(nMod)),
