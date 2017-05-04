@@ -63,8 +63,29 @@ def partial(Mod_data, age, motion):
     value, sig = p_corr(Mod_data, age, motion)
     return np.nan_to_num(value), np.nan_to_num(sig)
 
+def generate_dti_fmri_motion():
+    dti_motion = []
+    fmri_motion = []
+    ID_subj = os.listdir(aging_data_dir)
+    ID_subj.sort()
+
+    for idx in ID_subj:
+        folder_path = os.path.join(aging_data_dir, idx)
+        dti_motion_subject = np.load(os.path.join(folder_path, 'dti_motion.npy'))
+        fmri_motion_subject = np.load(os.path.join(folder_path, 'fmri_motion.npy'))
+        dti_motion.append(dti_motion_subject)
+        fmri_motion.append(fmri_motion_subject)
+
+    np.save(os.path.join(container_data_dir, 'dti_motion'), dti_motion)
+    np.save(os.path.join(container_data_dir, 'fmri_motion'), fmri_motion)
+    return
 
 def init_variables():
+    
+    if not os.path.exists(os.path.join(container_data_dir, 'fmri_motion.npy')):
+        generate_dti_fmri_motion()
+    
+    
     age = np.load(os.path.join(container_data_dir, 'age.npy'))
     dti_motion = np.load(os.path.join(container_data_dir, 'dti_motion.npy'))
     fmri_motion = np.load(os.path.join(container_data_dir, 'fmri_motion.npy'))
@@ -157,9 +178,11 @@ def get_descriptors():
     for i, values_list in enumerate(ext_fc_cn[2:]):
         if max(values_list)>0.34:
             print(max(values_list), ext_fc_pn[i+2][np.argmax(np.array(values_list))])
+        
 
-
-
-
-
-
+    
+    
+    
+    
+    
+    
