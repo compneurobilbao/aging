@@ -92,7 +92,7 @@ def init_variables():
 
     return age, dti_motion, fmri_motion
 
-
+# better to compute then together: loading the mods takes most of the time
 def compute_connectivity(internal=False, external=False):
     if not internal and not external:
         print('Not computing anything')
