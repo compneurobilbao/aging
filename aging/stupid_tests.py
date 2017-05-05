@@ -45,3 +45,5 @@ for nMod in range(2, 1001):
                      SC_matrix,
                      modules_info,
                      ID_subj)
+
+compute_connectivity(internal=True, external=True)

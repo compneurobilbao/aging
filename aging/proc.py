@@ -71,8 +71,8 @@ def generate_dti_fmri_motion():
 
     for idx in ID_subj:
         folder_path = os.path.join(aging_data_dir, idx)
-        dti_motion_subject = np.load(os.path.join(folder_path, 'dti_motion.npy'))
-        fmri_motion_subject = np.load(os.path.join(folder_path, 'fmri_motion.npy'))
+        dti_motion_subject = np.load(os.path.join(folder_path, 'dti_motion.npy')).astype(np.float)
+        fmri_motion_subject = np.load(os.path.join(folder_path, 'fmri_motion.npy')).astype(np.float)
         dti_motion.append(dti_motion_subject)
         fmri_motion.append(fmri_motion_subject)
 
