@@ -44,29 +44,46 @@ def extract_info_from_mat(matfile):
     return link_strength, source_coord, source_size, target_coord, target_size
     
     
-
-
-
-
-node_number = len(os.listdir('/home/asier/Desktop/figure6/'))
-connectivity_matrix = np.zeros([node_number * 2, node_number * 2])
-coords = np.zeros([node_number * 2, 3])
-node_size = np.zeros([node_number * 2])
-
-for i, file in enumerate(glob.glob('/home/asier/Desktop/figure6/*')):
+#def coords_to_AAL(coords):
+#    
+#    from nilearn.datasets import fetch_atlas_aal
+#    import nibabel as nb
+#
+#    np.set_printoptions(precision=3, suppress=True)
+#    
+#    atlas = fetch_atlas_aal()
+#    atlas_filename = atlas.maps
+#    img = nb.load(atlas_filename)
+#    
+#    voxel_coords = np.round(f(img, coords))
+#    
+#    image_data = img.get_data()
+#
+#def f(img, coords):
+#    """ Return X, Y, Z coordinates for i, j, k """
+#
+#    M = img.affine[:3, :3]
+#    abc = img.affine[:3, 3]
+#
+#    return M.dot(coords) + abc
     
-    link_strength, coords[i*2], node_size[i*2], coords[i*2+1], node_size[i*2+1] = extract_info_from_mat(file)
-    connectivity_matrix[i*2][i*2+1] = connectivity_matrix[i*2+1][i*2] =  link_strength
-    
-    
-plot_connectome(adjacency_matrix = connectivity_matrix,
-                node_coords = coords,
-                node_size = node_size*10,
-                node_color= 'k')    
-    
-    
 
-
-
-
-matfile = '/home/asier/Desktop/figure6/seed_partition_107_module_ 1_target_22_SFC_signLinks.mat'
+if __name__ == "__main__":
+    
+    node_number = len(os.listdir('/home/asier/Desktop/figure6/'))
+    connectivity_matrix = np.zeros([node_number * 2, node_number * 2])
+    coords = np.zeros([node_number * 2, 3])
+    node_size = np.zeros([node_number * 2])
+    
+    for i, file in enumerate(glob.glob('/home/asier/Desktop/figure6/*')):
+        
+        link_strength, coords[i*2], node_size[i*2], coords[i*2+1], node_size[i*2+1] = extract_info_from_mat(file)
+        connectivity_matrix[i*2][i*2+1] = connectivity_matrix[i*2+1][i*2] =  link_strength
+        
+        
+    plot_connectome(adjacency_matrix = connectivity_matrix,
+                    node_coords = coords,
+                    node_size = node_size*10,
+                    node_color= 'auto',
+                    display_mode =  'lyrz')    
+    
