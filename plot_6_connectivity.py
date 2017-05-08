@@ -28,7 +28,7 @@ def calculate_centroid(rois):
                            mni_coords[roi].ravel()[1], \
                            mni_coords[roi].ravel()[2]
 
-    return np.array([np.mean(x), np.mean(y), np.mean(z)])
+    return np.array([np.mean(-x), np.mean(y), np.mean(z)]) # corrected MNI in x axis
 
 
 def extract_info_from_mat(matfile):
