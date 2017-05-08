@@ -5,23 +5,28 @@ Created on Mon May  8 10:36:19 2017
 
 @author: asier
 """
+import aging as ag
+import scipy
 import h5py
 import numpy as np
 import os
 import glob
 from nilearn.plotting import plot_connectome
 
+data_path = os.path.join(ag.__path__[0], 'data')
+container_data_dir = os.path.join(data_path, 'container_data')
+
 
 def calculate_centroid(rois):
 
-    coords = np.loadtxt('/home/asier/git/bha/bha/data/MNI_coords.txt')
+    mni_coords = np.loadtxt(os.path.join(container_data_dir, 'MNI_coords.txt'))
 
     x, y, z = np.zeros(len(rois)), np.zeros(len(rois)), np.zeros(len(rois))
 
     for i, roi in enumerate(rois):
-        x[i], y[i], z[i] = coords[roi].ravel()[0], \
-                           coords[roi].ravel()[1], \
-                           coords[roi].ravel()[2]
+        x[i], y[i], z[i] = mni_coords[roi].ravel()[0], \
+                           mni_coords[roi].ravel()[1], \
+                           mni_coords[roi].ravel()[2]
 
     return np.array([np.mean(x), np.mean(y), np.mean(z)])
 
@@ -66,8 +71,28 @@ def extract_info_from_mat(matfile):
 #    abc = img.affine[:3, 3]
 #
 #    return M.dot(coords) + abc
+
+
+def coord_to_AAL(coord):
+    
+    # AALLabelID116 and modules_aal
+    f = scipy.io.loadmat(os.path.join(container_data_dir, 'modules_aal_labels.mat'))
+    rois_to_aal = f['modules_aal'].ravel()
+    aal_names = ['not recognized'] + [label[1][0] for label in f['AALLabelID116']]
+    mni_coords = np.loadtxt(os.path.join(container_data_dir, 'MNI_coords.txt'))
+    
+    dist = np.zeros(len(mni_coords))
+    coord = np.round(coord)
+
+    for i, mni_coord in enumerate(mni_coords):
+        dist[i] = numpy.linalg.norm(mni_coord-coord)
+
+    return aal_names[rois_to_aal[np.argmin(dist)]]
     
 
+
+
+                 
 if __name__ == "__main__":
     
     node_number = len(os.listdir('/home/asier/Desktop/figure6/'))
@@ -84,6 +109,7 @@ if __name__ == "__main__":
     plot_connectome(adjacency_matrix = connectivity_matrix,
                     node_coords = coords,
                     node_size = node_size*10,
-                    node_color= 'auto',
-                    display_mode =  'lyrz')    
+                    node_color= 'auto')    
     
+    for coord in coords:
+        print(coord_to_AAL(coord))
