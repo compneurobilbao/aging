@@ -122,5 +122,7 @@ if __name__ == "__main__":
     for coord in coords:
         print(coord_to_AAL(coord))
         
+    for size in node_size:
+        print(size*27)     
 
         
