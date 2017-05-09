@@ -31,6 +31,17 @@ def calculate_centroid(rois):
     return np.array([np.mean(-x), np.mean(y), np.mean(z)]) # corrected MNI in x axis
 
 
+def calculate_size(roi_list):
+    
+    f = scipy.io.loadmat(os.path.join(container_data_dir, 'rois_size.mat'))
+    rois_to_aal = f['rois_size'].ravel()
+    
+    size = 0
+    for roi in roi_list:
+        size += rois_to_aal[roi]
+        
+    return size
+
 def extract_info_from_mat(matfile):
 
     f = h5py.File(matfile)
@@ -38,10 +49,10 @@ def extract_info_from_mat(matfile):
 
     link_strength = data[np.where(logical_and(data > 0, data != 2))][0]
     sources = np.argwhere(data == 2)
-    source_size = len(sources)
+    source_size = calculate_size(sources)
 
     targets = np.argwhere(logical_and(data > 0, data != 2))
-    target_size = len(targets)
+    target_size = calculate_size(targets)
     
     source_coord = calculate_centroid(sources)
     target_coord = calculate_centroid(targets)
@@ -88,11 +99,8 @@ def coord_to_AAL(coord):
         dist[i] = numpy.linalg.norm(mni_coord-coord)
 
     return aal_names[rois_to_aal[np.argmin(dist)]]
-    
 
 
-
-                 
 if __name__ == "__main__":
     
     node_number = len(os.listdir('/home/asier/Desktop/figure6/'))
@@ -108,8 +116,11 @@ if __name__ == "__main__":
         
     plot_connectome(adjacency_matrix = connectivity_matrix,
                     node_coords = coords,
-                    node_size = node_size*10,
+                    node_size = node_size*2,
                     node_color= 'auto')    
     
     for coord in coords:
         print(coord_to_AAL(coord))
+        
+
+        
