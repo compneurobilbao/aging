@@ -88,11 +88,8 @@ def coord_to_AAL(coord):
     aal_names = ['not recognized'] + [label[1][0] for label in f['AALLabelID116']]
     mni_coords = np.loadtxt(os.path.join(container_data_dir, 'MNI_coords.txt'))
     
-    dist = np.zeros(len(mni_coords))
     coord = np.round(coord)
-
-    for i, mni_coord in enumerate(mni_coords):
-        dist[i] = numpy.linalg.norm(mni_coord-coord)
+    dist = [numpy.linalg.norm(mni_coord-coord) for mni_coord in mni_coords]
 
     return aal_names[rois_to_aal[np.argmin(dist)]]
 
