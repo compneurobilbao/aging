@@ -38,7 +38,7 @@ def calculate_size(roi_list):
     
     size = 0
     for roi in roi_list:
-        size += rois_to_aal[roi]
+        size += rois_to_aal[roi][0]
         
     return size
 
@@ -116,7 +116,7 @@ if __name__ == "__main__":
         
     plot_connectome(adjacency_matrix = connectivity_matrix,
                     node_coords = coords,
-                    node_size = node_size*2,
+                    node_size = node_size,
                     node_color= 'auto')    
     
     for coord in coords:
