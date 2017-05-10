@@ -35,12 +35,8 @@ def calculate_size(roi_list):
     
     f = scipy.io.loadmat(os.path.join(container_data_dir, 'rois_size.mat'))
     rois_to_aal = f['rois_size'].ravel()
-    
-    size = 0
-    for roi in roi_list:
-        size += rois_to_aal[roi][0]
-        
-    return size
+
+    return sum([rois_to_aal[roi][0] for roi in roi_list])
 
 def extract_info_from_mat(matfile):
 
@@ -123,6 +119,6 @@ if __name__ == "__main__":
         print(coord_to_AAL(coord))
         
     for size in node_size:
-        print(size*27)     
+        print(size*27)     # 3mm voxel. 3^3 mm^3
 
         
