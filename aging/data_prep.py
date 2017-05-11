@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon May  8 10:36:19 2017
+
+@author: asier
+"""
 from __future__ import absolute_import, division, print_function
 from itertools import product
 
