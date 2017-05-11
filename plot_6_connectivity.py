@@ -6,6 +6,7 @@ Created on Mon May  8 10:36:19 2017
 @author: asier
 """
 import os
+from os.path import join as opj
 import glob
 import aging as ag
 import scipy
@@ -14,13 +15,13 @@ import numpy as np
 
 from nilearn.plotting import plot_connectome
 
-DATA_PATH = os.path.join(ag.__path__[0], 'data')
-CONTAINER_DATA_PATH = os.path.join(DATA_PATH, 'container_data')
+DATA_PATH = opj(ag.__path__[0], 'data')
+CONTAINER_DATA_PATH = opj(DATA_PATH, 'container_data')
 
 
 def calculate_centroid(rois):
 
-    mni_coords = np.loadtxt(os.path.join(CONTAINER_DATA_PATH,
+    mni_coords = np.loadtxt(opj(CONTAINER_DATA_PATH,
                                          'MNI_coords.txt'))
 
     x, y, z = np.zeros(len(rois)), np.zeros(len(rois)), np.zeros(len(rois))
@@ -35,7 +36,7 @@ def calculate_centroid(rois):
 
 def calculate_size(roi_list):
 
-    file = scipy.io.loadmat(os.path.join(CONTAINER_DATA_PATH, 'rois_size.mat'))
+    file = scipy.io.loadmat(opj(CONTAINER_DATA_PATH, 'rois_size.mat'))
     rois_to_aal = file['rois_size'].ravel()
 
     return sum([rois_to_aal[roi][0] for roi in roi_list])
@@ -62,12 +63,12 @@ def extract_info_from_mat(matfile):
 def coord_to_aal(coord):
 
     # AALLabelID116 and modules_aal
-    file = scipy.io.loadmat(os.path.join(CONTAINER_DATA_PATH,
+    file = scipy.io.loadmat(opj(CONTAINER_DATA_PATH,
                                          'modules_aal_labels.mat'))
     rois_to_aal = file['modules_aal'].ravel()
     aal_names = ['not recognized'] + \
                 [label[1][0] for label in file['AALLabelID116']]
-    mni_coords = np.loadtxt(os.path.join(CONTAINER_DATA_PATH,
+    mni_coords = np.loadtxt(opj(CONTAINER_DATA_PATH,
                                          'MNI_coords.txt'))
 
     coord = np.round(coord)

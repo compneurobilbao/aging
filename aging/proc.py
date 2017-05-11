@@ -1,15 +1,16 @@
 from __future__ import absolute_import, division, print_function
 
 import os
+from os.path import join as opj
 import aging as ag
 import numpy as np
 from scipy import stats
 import pickle
 
-data_path = os.path.join(ag.__path__[0], 'data')
-aging_data_dir = os.path.join(data_path, 'subjects')
-container_data_dir = os.path.join(data_path, 'container_data')  # ID_subj,FCpil
-mod_data_dir = os.path.join(data_path, 'mods')
+data_path = opj(ag.__path__[0], 'data')
+aging_data_dir = opj(data_path, 'subjects')
+container_data_dir = opj(data_path, 'container_data')  # ID_subj,FCpil
+mod_data_dir = opj(data_path, 'mods')
 
 
 MAX_PART = 1000
@@ -63,6 +64,7 @@ def partial(Mod_data, age, motion):
     value, sig = p_corr(Mod_data, age, motion)
     return np.nan_to_num(value), np.nan_to_num(sig)
 
+
 def generate_dti_fmri_motion():
     dti_motion = []
     fmri_motion = []
@@ -70,25 +72,25 @@ def generate_dti_fmri_motion():
     ID_subj.sort()
 
     for idx in ID_subj:
-        folder_path = os.path.join(aging_data_dir, idx)
-        dti_motion_subject = np.load(os.path.join(folder_path, 'dti_motion.npy')).astype(np.float)
-        fmri_motion_subject = np.load(os.path.join(folder_path, 'fmri_motion.npy')).astype(np.float)
+        folder_path = opj(aging_data_dir, idx)
+        dti_motion_subject = np.load(opj(folder_path, 'dti_motion.npy')).astype(np.float)
+        fmri_motion_subject = np.load(opj(folder_path, 'fmri_motion.npy')).astype(np.float)
         dti_motion.append(dti_motion_subject)
         fmri_motion.append(fmri_motion_subject)
 
-    np.save(os.path.join(container_data_dir, 'dti_motion'), dti_motion)
-    np.save(os.path.join(container_data_dir, 'fmri_motion'), fmri_motion)
+    np.save(opj(container_data_dir, 'dti_motion'), dti_motion)
+    np.save(opj(container_data_dir, 'fmri_motion'), fmri_motion)
     return
 
 def init_variables():
     
-    if not os.path.exists(os.path.join(container_data_dir, 'fmri_motion.npy')):
+    if not os.path.exists(opj(container_data_dir, 'fmri_motion.npy')):
         generate_dti_fmri_motion()
     
     
-    age = np.load(os.path.join(container_data_dir, 'age.npy'))
-    dti_motion = np.load(os.path.join(container_data_dir, 'dti_motion.npy'))
-    fmri_motion = np.load(os.path.join(container_data_dir, 'fmri_motion.npy'))
+    age = np.load(opj(container_data_dir, 'age.npy'))
+    dti_motion = np.load(opj(container_data_dir, 'dti_motion.npy'))
+    fmri_motion = np.load(opj(container_data_dir, 'fmri_motion.npy'))
 
     return age, dti_motion, fmri_motion
 
@@ -113,7 +115,7 @@ def compute_connectivity(internal=False, external=False):
 
     for nMod in range(2, 999):
         print(nMod)
-        data = np.load(os.path.join(mod_data_dir, 'mod_{}.npz'.format(nMod)))
+        data = np.load(opj(mod_data_dir, 'mod_{}.npz'.format(nMod)))
         FC_Mod = data.f.FC_Mod
         SC_Mod = data.f.SC_Mod
 
@@ -145,31 +147,31 @@ def compute_connectivity(internal=False, external=False):
                     partial(SC_data, age, dti_motion)
 
     if internal:
-        with open(os.path.join(container_data_dir,
+        with open(opj(container_data_dir,
                                'internal_fc_cn_pn'), 'wb') as f:
             pickle.dump([int_fc_cn, int_fc_pn], f)
-        with open(os.path.join(container_data_dir,
+        with open(opj(container_data_dir,
                                'internal_sc_cn_pn'), 'wb') as f:
             pickle.dump([int_sc_cn, int_sc_pn], f)
     if external:
-        with open(os.path.join(container_data_dir,
+        with open(opj(container_data_dir,
                                'external_fc_cn_pn'), 'wb') as f:
             pickle.dump([ext_fc_cn, ext_fc_pn], f)
-        with open(os.path.join(container_data_dir,
+        with open(opj(container_data_dir,
                                'external_sc_cn_pn'), 'wb') as f:
             pickle.dump([ext_sc_cn, ext_sc_pn], f)
 
 
 def get_descriptors():
     
-    int_fc_cn, int_fc_pn = pickle.load(open(os.path.join(container_data_dir,
+    int_fc_cn, int_fc_pn = pickle.load(open(opj(container_data_dir,
                                                  'internal_fc_cn_pn'), 'rb'))
-    ext_fc_cn, ext_fc_pn = pickle.load(open(os.path.join(container_data_dir,
+    ext_fc_cn, ext_fc_pn = pickle.load(open(opj(container_data_dir,
                                                  'external_fc_cn_pn'), 'rb'))
     
-    int_sc_cn, int_sc_pn = pickle.load(open(os.path.join(container_data_dir,
+    int_sc_cn, int_sc_pn = pickle.load(open(opj(container_data_dir,
                                                  'internal_sc_cn_pn'), 'rb'))
-    ext_sc_cn, ext_sc_pn = pickle.load(open(os.path.join(container_data_dir,
+    ext_sc_cn, ext_sc_pn = pickle.load(open(opj(container_data_dir,
                                                  'external_sc_cn_pn'), 'rb'))
     
     
