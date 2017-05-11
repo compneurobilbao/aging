@@ -22,7 +22,7 @@ CONTAINER_DATA_PATH = opj(DATA_PATH, 'container_data')
 def calculate_centroid(rois):
 
     mni_coords = np.loadtxt(opj(CONTAINER_DATA_PATH,
-                                         'MNI_coords.txt'))
+                                'MNI_coords.txt'))
 
     x, y, z = np.zeros(len(rois)), np.zeros(len(rois)), np.zeros(len(rois))
 
@@ -64,12 +64,12 @@ def coord_to_aal(coord):
 
     # AALLabelID116 and modules_aal
     file = scipy.io.loadmat(opj(CONTAINER_DATA_PATH,
-                                         'modules_aal_labels.mat'))
+                                'modules_aal_labels.mat'))
     rois_to_aal = file['modules_aal'].ravel()
     aal_names = ['not recognized'] + \
                 [label[1][0] for label in file['AALLabelID116']]
     mni_coords = np.loadtxt(opj(CONTAINER_DATA_PATH,
-                                         'MNI_coords.txt'))
+                                'MNI_coords.txt'))
 
     coord = np.round(coord)
     dist = [np.linalg.norm(mni_coord-coord) for mni_coord in mni_coords]
