@@ -2,13 +2,14 @@ from __future__ import absolute_import, division, print_function
 
 import os
 from os.path import join as opj
+import pickle
+
 import aging as ag
 import numpy as np
 from scipy import stats
-import pickle
 
 DATA_PATH = opj(ag.__path__[0], 'data')
-aging_data_dir = opj(DATA_PATH, 'subjects')
+AGING_DATA_DIR = opj(DATA_PATH, 'subjects')
 CONTAINER_DATA_DIR = opj(DATA_PATH, 'container_data')  # ID_subj,FCpil
 MOD_DATA_DIR = opj(DATA_PATH, 'mods')
 
@@ -47,32 +48,32 @@ def p_corr(x, y, z):
     c = (rxy-rxz*ryz)/np.sqrt((1-rxz**2)*(1-ryz**2))
 
     # SIGNIFICANCE TEST
-    NN = x.shape[0] - 1
+    nn = x.shape[0] - 1
     tmp = 1 - c * c
 
     if tmp < 0:
         tmp = 0  # prevent tmp<0 i.e. imag(t)~=0
 
-    t = c * np.sqrt(np.max((NN-2, 0)) / tmp)
-    v = stats.t.cdf(t, NN-2)
+    t = c * np.sqrt(np.max((nn-2, 0)) / tmp)
+    v = stats.t.cdf(t, nn-2)
     v = 2 * np.min((v, 1 - v))
 
     return c, v
 
 
-def partial(Mod_data, age, motion):
-    value, sig = p_corr(Mod_data, age, motion)
+def partial(mod_data, age, motion):
+    value, sig = p_corr(mod_data, age, motion)
     return np.nan_to_num(value), np.nan_to_num(sig)
 
 
 def generate_dti_fmri_motion():
     dti_motion = []
     fmri_motion = []
-    ID_subj = os.listdir(aging_data_dir)
-    ID_subj.sort()
+    id_subj = os.listdir(AGING_DATA_DIR)
+    id_subj.sort()
 
-    for idx in ID_subj:
-        folder_path = opj(aging_data_dir, idx)
+    for idx in id_subj:
+        folder_path = opj(AGING_DATA_DIR, idx)
         dti_motion_subject = np.load(opj(folder_path,
                                          'dti_motion.npy')).astype(np.float)
         fmri_motion_subject = np.load(opj(folder_path,
@@ -162,7 +163,7 @@ def compute_connectivity(internal=False, external=False):
 
 
 def get_descriptors():
-
+    # TODO: Extract descriptors and plot
     int_fc_cn, int_fc_pn = pickle.load(open(opj(CONTAINER_DATA_DIR,
                                                 'internal_fc_cn_pn'), 'rb'))
     ext_fc_cn, ext_fc_pn = pickle.load(open(opj(CONTAINER_DATA_DIR,
