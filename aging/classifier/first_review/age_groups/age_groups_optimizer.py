@@ -46,18 +46,16 @@ X_young = data.iloc[idx_young]
 
 ordered_data, best_idx_list, results_young, sigma = optimize(X_young,
                                                              y_young,
-                                                             nexp=50)
+                                                             nexp=100)
 
 np.save('best_idx_ext_int_mae_young.npy', best_idx_list)
 np.save('ordered_data_ext_int_mae_young.npy',ordered_data)
 np.save('results_ext_int_mae_young.npy', results_young)
 np.save('sigma_ext_int_mae_young.npy', sigma)
+#results_young = np.squeeze(np.load('results_ext_int_mae_young.npy'))
 
-#ordered_data = np.load('ordered_data_ext_int_mae.npy')
-#results = np.squeeze(np.load('results_ext_int_mae.npy'))
-#sigma = np.squeeze(np.load('sigma_ext_int_mae.npy'))
 
-plt.plot(results_young)
+#plt.plot(results_young)
 print(np.argmin(results_young[1:60]))
 print(np.min(results_young[1:60]))
 
@@ -69,14 +67,15 @@ X_adult = data.iloc[idx_adult]
 
 ordered_data, best_idx_list, results_adult, sigma = optimize(X_adult,
                                                              y_adult,
-                                                             nexp=50)
+                                                             nexp=100)
 
-np.save('best_idx_ext_int_mae_young.npy', best_idx_list)
-np.save('ordered_data_ext_int_mae_young.npy',ordered_data)
-np.save('results_ext_int_mae_young.npy', results_adult)
-np.save('sigma_ext_int_mae_young.npy', sigma)
+np.save('best_idx_ext_int_mae_adult.npy', best_idx_list)
+np.save('ordered_data_ext_int_mae_adult.npy',ordered_data)
+np.save('results_ext_int_mae_adult.npy', results_adult)
+np.save('sigma_ext_int_mae_adult.npy', sigma)
+#results_adult = np.squeeze(np.load('results_ext_int_mae_adult.npy'))
 
-plt.plot(results_adult)
+#plt.plot(results_adult)
 print(np.argmin(results_adult[1:60]))
 print(np.min(results_adult[1:60]))
 
@@ -87,18 +86,18 @@ y_old = np.take(y, idx_old)
 X_old = data.iloc[idx_old]
 
 ordered_data, best_idx_list, results_old, sigma = optimize(X_old,
-                                                           y_adult,
-                                                           nexp=50)
+                                                           y_old,
+                                                           nexp=100)
 
 np.save('best_idx_ext_int_mae_old.npy', best_idx_list)
 np.save('ordered_data_ext_int_mae_old.npy',ordered_data)
 np.save('results_ext_int_mae_old.npy', results_old)
 np.save('sigma_ext_int_mae_old.npy', sigma)
+#results_old = np.squeeze(np.load('results_ext_int_mae_old.npy'))
 
-plt.plot(results_old)
+#plt.plot(results_old)
 print(np.argmin(results_old[1:60]))
 print(np.min(results_old[1:60]))
-
 
 
 def optimize(data, y, nexp=10):
@@ -126,8 +125,7 @@ def optimize(data, y, nexp=10):
             for j in range(nexp):
                 # Create from _test another _val set
                 X_train, X_test, y_train, y_test = train_test_split(X,
-                                                                    y,
-                                                                    test_size=0.33)
+                                                                    y)
     
                 lm.fit(X_train, y_train)
                 y_pred = lm.predict(X_test)
