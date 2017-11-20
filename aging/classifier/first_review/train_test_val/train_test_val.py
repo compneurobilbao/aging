@@ -17,7 +17,7 @@ from sklearn.cross_validation import train_test_split
 import aging as ag
 os.chdir(os.path.join(ag.__path__[0], 'classifier',
                       'first_review',
-                      'age_sex_groups'))
+                      'train_test_val'))
 
 """
 MAE

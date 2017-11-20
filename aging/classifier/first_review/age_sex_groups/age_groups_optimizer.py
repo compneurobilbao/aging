@@ -35,107 +35,115 @@ data_ext = pd.read_csv('data_ext.csv', header=None).T
 data_int = pd.read_csv('data_int.csv', header=None).T
 
 data = pd.concat((data_ext, data_int), axis = 1, ignore_index = True)
-
 # import y data, age
 y = pd.read_csv('age.csv', header=None)
 y = np.array(y)
 
+### YOUNG: <25
+idx_young = np.where(y < 25)[0]
+y_young = np.take(y, idx_young)
+X_young = data.iloc[idx_young]
 
-idx_set = set(range(200))
-best_idx_list = np.zeros([200,1], dtype='int')
-results = np.zeros([200,1])
-sigma = np.zeros([200,1])
-Nexp = 10
+ordered_data, best_idx_list, results_young, sigma = optimize(X_young,
+                                                             y_young,
+                                                             nexp=50)
 
-data_use, X_val, y_use, y_val = train_test_split(data.loc[:, :],
-                                                 y,
-                                                 test_size=0.2)
-
-# First element
-ordered_data = data_use.loc[:,0]
-idx_set.remove(0)
-
-
-
-# MAE as a function of descriptor number
-lm = LinearRegression()
-for i in range(1, 116):
-
-    for idx in idx_set:
-
-        new_column = data_use.loc[:, idx]
-        X = pd.concat((ordered_data, new_column), axis=1, ignore_index=True)
-
-        r2_val = np.zeros([Nexp, 1])
-
-        for j in range(Nexp):
-            # Create from _test another _val set
-            X_train, X_test, y_train, y_test = train_test_split(X,
-                                                                y_use,
-                                                                test_size=0.33)
-
-            lm.fit(X_train, y_train)
-            y_pred = lm.predict(X_test)
-            r2_val[j] = metrics.mean_absolute_error(y_test, y_pred)
-
-        if np.mean(r2_val) < results[i] or results[i] == 0:
-            results[i] = np.mean(r2_val)
-            sigma[i] = np.std(r2_val)
-            best_descriptor = new_column
-            best_idx = idx
-        elif np.mean(r2_val) < 0:
-            print("error in r2 value")
-    
-    print("loop", i, "best", best_idx)
-    idx_set.remove(best_idx) 
-    best_idx_list[i] = int(best_idx)    
-    ordered_data = pd.concat((ordered_data,best_descriptor),axis=1, ignore_index=True)
-    
-
-np.save('best_idx_ext_int_mae_train_test_val.npy', best_idx_list)
-np.save('ordered_data_ext_int_mae_train_test_val.npy',ordered_data)
-np.save('results_ext_int_mae_train_test_val.npy', results)
-np.save('sigma_ext_int_mae_train_test_val.npy', sigma)
-
+np.save('best_idx_ext_int_mae_young.npy', best_idx_list)
+np.save('ordered_data_ext_int_mae_young.npy',ordered_data)
+np.save('results_ext_int_mae_young.npy', results_young)
+np.save('sigma_ext_int_mae_young.npy', sigma)
 
 #ordered_data = np.load('ordered_data_ext_int_mae.npy')
 #results = np.squeeze(np.load('results_ext_int_mae.npy'))
 #sigma = np.squeeze(np.load('sigma_ext_int_mae.npy'))
 
-plt.plot(results)
-print(np.argmin(results[1:114]))
-print(np.min(results[1:114]))
-
-number_of_descriptors = np.argmin(results[1:114]) + 1  # WARNING! is 1:, so +1
-y = y_use
-X = np.array(ordered_data)[:, :number_of_descriptors]
-error = np.zeros((y_val.shape[0]))
-y_pred = np.zeros((y_val.shape[0]))
+plt.plot(results_young)
+print(np.argmin(results_young[1:114]))
+print(np.min(results_young[1:114]))
 
 
-lm = LinearRegression()
-lm.fit(X, y)
+### ADULT: 25<X<60
+idx_adult = np.where((y > 25) & (y < 60))[0]
+y_adult = np.take(y, idx_adult)
+X_adult = data.iloc[idx_adult]
 
-X_val_ = np.array(X_val)
-# order
-X_val_desc = np.take(X_val_, best_idx_list[:number_of_descriptors],
-                     axis=1)[:, :, 0]
+ordered_data, best_idx_list, results_adult, sigma = optimize(X_adult,
+                                                             y_adult,
+                                                             nexp=50)
 
-for i in range(y_val.shape[0]):
-    X_ = X_val_desc[i, :]
-    X_ = X_.reshape(1, -1)
-    y_pred[i] = lm.predict(X_)
-    error[i] = y_val[i] - y_pred[i]
+np.save('best_idx_ext_int_mae_young.npy', best_idx_list)
+np.save('ordered_data_ext_int_mae_young.npy',ordered_data)
+np.save('results_ext_int_mae_young.npy', results_adult)
+np.save('sigma_ext_int_mae_young.npy', sigma)
 
-plt.scatter(y_val, error)
-plt.ylabel("prediction error")
-plt.xlabel("age")
+plt.plot(results_adult)
+print(np.argmin(results_adult[1:114]))
+print(np.min(results_adult[1:114]))
 
-plt.scatter(y_val, y_pred)
-plt.ylabel("predicted")
-plt.xlabel("real")
 
-np.mean(abs(error))
+### OLD: 25<X<60
+idx_old = np.where(y > 60)[0]
+y_old = np.take(y, idx_old)
+X_old = data.iloc[idx_old]
 
-import scipy
-print(scipy.stats.pearsonr(y_val[:,0], error))    
+ordered_data, best_idx_list, results_old, sigma = optimize(X_old,
+                                                           y_adult,
+                                                           nexp=50)
+
+np.save('best_idx_ext_int_mae_old.npy', best_idx_list)
+np.save('ordered_data_ext_int_mae_old.npy',ordered_data)
+np.save('results_ext_int_mae_old.npy', results_old)
+np.save('sigma_ext_int_mae_old.npy', sigma)
+
+plt.plot(results_old)
+print(np.argmin(results_old[1:114]))
+print(np.min(results_old[1:114]))
+
+
+
+def optimize(data, y, nexp=10):
+    idx_set = set(range(200))
+    best_idx_list = np.zeros([200,1], dtype='int')
+    results = np.zeros([200,1])
+    sigma = np.zeros([200,1])
+    
+    # First element
+    ordered_data = data.loc[:,0]
+    idx_set.remove(0)
+    
+    
+    # MAE as a function of descriptor number
+    lm = LinearRegression()
+    for i in range(1, 116):
+    
+        for idx in idx_set:
+    
+            new_column = data.loc[:, idx]
+            X = pd.concat((ordered_data, new_column), axis=1, ignore_index=True)
+    
+            r2_val = np.zeros([nexp, 1])
+    
+            for j in range(nexp):
+                # Create from _test another _val set
+                X_train, X_test, y_train, y_test = train_test_split(X,
+                                                                    y,
+                                                                    test_size=0.33)
+    
+                lm.fit(X_train, y_train)
+                y_pred = lm.predict(X_test)
+                r2_val[j] = metrics.mean_absolute_error(y_test, y_pred)
+    
+            if np.mean(r2_val) < results[i] or results[i] == 0:
+                results[i] = np.mean(r2_val)
+                sigma[i] = np.std(r2_val)
+                best_descriptor = new_column
+                best_idx = idx
+            elif np.mean(r2_val) < 0:
+                print("error in r2 value")
+        
+        print("loop", i, "best", best_idx)
+        idx_set.remove(best_idx) 
+        best_idx_list[i] = int(best_idx)    
+        ordered_data = pd.concat((ordered_data,best_descriptor),axis=1, ignore_index=True)
+        
+    return ordered_data, best_idx_list, results, sigma
