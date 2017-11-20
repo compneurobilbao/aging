@@ -27,7 +27,9 @@ MAE
 data_ext = pd.read_csv('data_ext.csv', header=None).T
 data_int = pd.read_csv('data_int.csv', header=None).T
 
-data = pd.concat((data_ext, data_int), axis = 1, ignore_index = True)
+data = pd.concat((data_ext, data_int),
+                 axis=1,
+                 ignore_index=True)
 # import y data, age
 y = pd.read_csv('age.csv', header=None)
 y = np.array(y)
@@ -38,7 +40,7 @@ ordered_data, best_idx_list, results_young, sigma = optimize(data,
                                                              nexp=100)
 
 np.save('best_idx_ext_int_mae_lasso.npy', best_idx_list)
-np.save('ordered_data_ext_int_mae_lasso.npy',ordered_data)
+np.save('ordered_data_ext_int_mae_lasso.npy', ordered_data)
 np.save('results_ext_int_mae_lasso.npy', results_young)
 np.save('sigma_ext_int_mae_lasso.npy', sigma)
 
@@ -58,23 +60,22 @@ def optimize(data, y, nexp=10):
     # MAE as a function of descriptor number
     lm = Lasso()
     for i in range(1, 60):
-    
         for idx in idx_set:
-    
             new_column = data.loc[:, idx]
-            X = pd.concat((ordered_data, new_column), axis=1, ignore_index=True)
-    
+            X = pd.concat((ordered_data, new_column),
+                          axis=1,
+                          ignore_index=True)
+
             r2_val = np.zeros([nexp, 1])
-    
+
             for j in range(nexp):
                 # Create from _test another _val set
                 X_train, X_test, y_train, y_test = train_test_split(X,
                                                                     y)
-    
                 lm.fit(X_train, y_train)
                 y_pred = lm.predict(X_test)
                 r2_val[j] = metrics.mean_absolute_error(y_test, y_pred)
-    
+
             if np.mean(r2_val) < results[i] or results[i] == 0:
                 results[i] = np.mean(r2_val)
                 sigma[i] = np.std(r2_val)
@@ -82,10 +83,12 @@ def optimize(data, y, nexp=10):
                 best_idx = idx
             elif np.mean(r2_val) < 0:
                 print("error in r2 value")
-        
+
         print("loop", i, "best", best_idx)
-        idx_set.remove(best_idx) 
-        best_idx_list[i] = int(best_idx)    
-        ordered_data = pd.concat((ordered_data,best_descriptor),axis=1, ignore_index=True)
-        
+        idx_set.remove(best_idx)
+        best_idx_list[i] = int(best_idx)
+        ordered_data = pd.concat((ordered_data, best_descriptor),
+                                 axis=1,
+                                 ignore_index=True)
+
     return ordered_data, best_idx_list, results, sigma
