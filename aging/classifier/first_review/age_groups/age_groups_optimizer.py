@@ -5,13 +5,6 @@ Created on Thu Jan 19 08:59:05 2016
 
 @author: asier
 """
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Jan 19 08:59:05 2016
-
-@author: asier
-"""
 import os
 import numpy as np
 import pandas as pd
