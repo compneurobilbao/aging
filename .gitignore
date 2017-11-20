@@ -10,3 +10,4 @@ aging/data/*
 
 *.nii
 .spyproject/*
+*.npy
