@@ -38,7 +38,7 @@ idx_set = set(range(200))
 best_idx_list = np.zeros([200,1], dtype='int')
 results = np.zeros([200,1])
 sigma = np.zeros([200,1])
-Nexp = 10
+Nexp = 100
 
 data_use, X_val, y_use, y_val = train_test_split(data.loc[:, :],
                                                  y,
@@ -89,11 +89,15 @@ np.save('best_idx_ext_int_mae_train_test_val.npy', best_idx_list)
 np.save('ordered_data_ext_int_mae_train_test_val.npy',ordered_data)
 np.save('results_ext_int_mae_train_test_val.npy', results)
 np.save('sigma_ext_int_mae_train_test_val.npy', sigma)
+np.save('y_ext_int_mae_train_test_val.npy', y_use)
 
 
-#ordered_data = np.load('ordered_data_ext_int_mae.npy')
-#results = np.squeeze(np.load('results_ext_int_mae.npy'))
-#sigma = np.squeeze(np.load('sigma_ext_int_mae.npy'))
+
+#ordered_data = np.load('ordered_data_ext_int_mae_train_test_val.npy')
+#results = np.squeeze(np.load('results_ext_int_mae_train_test_val.npy'))
+#sigma = np.squeeze(np.load('sigma_ext_int_mae_train_test_val.npy'))
+#best_idx_list = np.load('best_idx_ext_int_mae_train_test_val.npy')
+# y_use = np.load('best_idx_ext_int_mae_train_test_val.npy')
 
 plt.plot(results)
 print(np.argmin(results[1:114]))
@@ -120,9 +124,9 @@ for i in range(y_val.shape[0]):
     y_pred[i] = lm.predict(X_)
     error[i] = y_val[i] - y_pred[i]
 
-plt.scatter(y_val, error)
-plt.ylabel("prediction error")
-plt.xlabel("age")
+#plt.scatter(y_val, error)
+#plt.ylabel("prediction error")
+#plt.xlabel("age")
 
 plt.scatter(y_val, y_pred)
 plt.ylabel("predicted")
@@ -131,4 +135,4 @@ plt.xlabel("real")
 np.mean(abs(error))
 
 import scipy
-print(scipy.stats.pearsonr(y_val[:,0], error))    
+print(scipy.stats.pearsonr(y_val[:,0], y_pred))    
