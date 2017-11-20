@@ -35,44 +35,42 @@ y = np.array(y)
 
 
 idx_set = set(range(200))
-best_idx_list = np.zeros([200,1])
+best_idx_list = np.zeros([200,1], dtype='int')
 results = np.zeros([200,1])
 sigma = np.zeros([200,1])
-Nexp = 100
+Nexp = 10
+
+data_use, X_val, y_use, y_val = train_test_split(data.loc[:, :],
+                                                 y,
+                                                 test_size=0.2)
 
 # First element
-ordered_data = data.loc[:,0]
+ordered_data = data_use.loc[:,0]
 idx_set.remove(0)
+
 
 
 # MAE as a function of descriptor number
 lm = LinearRegression()
-for i in range(1,116):
-    
+for i in range(1, 116):
+
     for idx in idx_set:
 
-        new_column = data.loc[:,idx]
-        X = pd.concat((ordered_data,new_column),axis=1, ignore_index=True)
+        new_column = data_use.loc[:, idx]
+        X = pd.concat((ordered_data, new_column), axis=1, ignore_index=True)
 
-        r2_val = np.zeros([Nexp,1])
-        
+        r2_val = np.zeros([Nexp, 1])
+
         for j in range(Nexp):
-            X_train, X_test, y_train, y_test = train_test_split(X, y)
-            
             # Create from _test another _val set
             X_train, X_test, y_train, y_test = train_test_split(X,
-                                                                y,
-                                                                test_size=0.4,
-                                                                random_state=1)
-            X_test, X_val, y_test, y_val = train_test_split(X_test,
-                                                            y_test,
-                                                            test_size=0.5,
-                                                            random_state=1)
+                                                                y_use,
+                                                                test_size=0.33)
 
             lm.fit(X_train, y_train)
             y_pred = lm.predict(X_test)
             r2_val[j] = metrics.mean_absolute_error(y_test, y_pred)
-    
+
         if np.mean(r2_val) < results[i] or results[i] == 0:
             results[i] = np.mean(r2_val)
             sigma[i] = np.std(r2_val)
@@ -83,45 +81,54 @@ for i in range(1,116):
     
     print("loop", i, "best", best_idx)
     idx_set.remove(best_idx) 
-    best_idx_list[i] = best_idx    
+    best_idx_list[i] = int(best_idx)    
     ordered_data = pd.concat((ordered_data,best_descriptor),axis=1, ignore_index=True)
     
 
-#np.save('best_idx_ext_int_mae.npy', best_idx_list)
-#np.save('ordered_data_ext_int_mae.npy',ordered_data)
-#np.save('results_ext_int_mae.npy', results)
-#np.save('sigma_ext_int_mae.npy', sigma)
+np.save('best_idx_ext_int_mae_train_test_val.npy', best_idx_list)
+np.save('ordered_data_ext_int_mae_train_test_val.npy',ordered_data)
+np.save('results_ext_int_mae_train_test_val.npy', results)
+np.save('sigma_ext_int_mae_train_test_val.npy', sigma)
 
 
 #ordered_data = np.load('ordered_data_ext_int_mae.npy')
 #results = np.squeeze(np.load('results_ext_int_mae.npy'))
 #sigma = np.squeeze(np.load('sigma_ext_int_mae.npy'))
 
+plt.plot(results)
+print(np.argmin(results[1:114]))
+print(np.min(results[1:114]))
 
-print(np.argmin(results[1:114])) # 
-print(np.min(results[1:114])) # 
-   
-number_of_descriptors = np.argmin(results[1:114])+1 #WARNING! is 1:, so +1
-y = np.array(pd.read_csv('age.csv', header=None))
-X = ordered_data[:,:number_of_descriptors]
-error = np.zeros((y.shape[0]))
+number_of_descriptors = np.argmin(results[1:114]) + 1  # WARNING! is 1:, so +1
+y = y_use
+X = np.array(ordered_data)[:, :number_of_descriptors]
+error = np.zeros((y_val.shape[0]))
+y_pred = np.zeros((y_val.shape[0]))
 
-for i in range(X.shape[0]):
 
-    y_test = y[i]
-    y_train = np.delete(y, (i), axis = 0)
-    X_test = X[i,:]
-    X_train = np.delete(X, (i), axis = 0)
-    
-    lm = LinearRegression()
-    lm.fit(X_train, y_train)
-    y_pred = lm.predict(X_val)
-    error[i] = y_val - y_pred
- 
-plt.scatter(y, error)
+lm = LinearRegression()
+lm.fit(X, y)
+
+X_val_ = np.array(X_val)
+# order
+X_val_desc = np.take(X_val_, best_idx_list[:number_of_descriptors],
+                     axis=1)[:, :, 0]
+
+for i in range(y_val.shape[0]):
+    X_ = X_val_desc[i, :]
+    X_ = X_.reshape(1, -1)
+    y_pred[i] = lm.predict(X_)
+    error[i] = y_val[i] - y_pred[i]
+
+plt.scatter(y_val, error)
 plt.ylabel("prediction error")
 plt.xlabel("age")
 
+plt.scatter(y_val, y_pred)
+plt.ylabel("predicted")
+plt.xlabel("real")
 
+np.mean(abs(error))
 
-
+import scipy
+print(scipy.stats.pearsonr(y_val[:,0], error))    
