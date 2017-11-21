@@ -139,7 +139,11 @@ results = np.load('results_ext_int_mae_cuadratic_polyfit.npy')
 print(np.argmin(results[1:59]))
 print(np.min(results[1:59]))
 
+"""
+Results:
 
+Cuadratic features and fitting: 57 features, 5.87 min mean error
+"""
 
 
 
