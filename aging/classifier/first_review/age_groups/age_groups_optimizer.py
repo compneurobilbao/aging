@@ -139,3 +139,18 @@ def optimize(data, y, nexp=10):
                                  ignore_index=True)
 
     return ordered_data, best_idx_list, results, sigma
+
+
+"""
+Results:
+
+Young (>10.88 and <25): 50 subjects, 28 features, 1.21 min mean error
+14.12 years span, 8.5% error
+
+Adult (>25 and <60): 49 subjects, 30 features, 2.49 min mean error
+25 years span, 10% error
+
+Old (>60 and <80.67): 56 subjects, 34 features, 1.57 min mean error
+20.67 years span, 7.6% error
+"""
+
