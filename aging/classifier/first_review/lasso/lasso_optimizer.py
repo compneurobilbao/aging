@@ -99,5 +99,5 @@ print(np.min(results[1:59]))
 Results:
 
 Lasso regression: 42 features, 6.35 min mean error
-  . 
+vs 54 and 6.12
 """
