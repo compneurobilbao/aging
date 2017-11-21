@@ -34,29 +34,26 @@ data = pd.concat((data_ext, data_int),
 y = pd.read_csv('age.csv', header=None)
 y = np.array(y)
 
-
-ordered_data, best_idx_list, results_young, sigma = optimize(data,
-                                                             y,
-                                                             nexp=100)
+ordered_data, best_idx_list, results, sigma = optimize(data,
+                                                       y,
+                                                       nexp=100)
 
 np.save('best_idx_ext_int_mae_lasso.npy', best_idx_list)
 np.save('ordered_data_ext_int_mae_lasso.npy', ordered_data)
-np.save('results_ext_int_mae_lasso.npy', results_young)
+np.save('results_ext_int_mae_lasso.npy', results)
 np.save('sigma_ext_int_mae_lasso.npy', sigma)
-
 
 
 def optimize(data, y, nexp=10):
     idx_set = set(range(200))
-    best_idx_list = np.zeros([200,1], dtype='int')
-    results = np.zeros([200,1])
-    sigma = np.zeros([200,1])
-    
+    best_idx_list = np.zeros([200, 1], dtype='int')
+    results = np.zeros([200, 1])
+    sigma = np.zeros([200, 1])
+
     # First element
-    ordered_data = data.loc[:,0]
+    ordered_data = data.loc[:, 0]
     idx_set.remove(0)
-    
-    
+
     # MAE as a function of descriptor number
     lm = Lasso()
     for i in range(1, 60):
@@ -92,3 +89,15 @@ def optimize(data, y, nexp=10):
                                  ignore_index=True)
 
     return ordered_data, best_idx_list, results, sigma
+
+results = np.load('results_ext_int_mae_lasso.npy')
+# plt.plot(results)
+print(np.argmin(results[1:59]))
+print(np.min(results[1:59]))
+
+"""
+Results:
+
+Lasso regression: 42 features, 6.35 min mean error
+  . 
+"""

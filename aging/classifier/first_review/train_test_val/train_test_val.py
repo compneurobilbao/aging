@@ -38,11 +38,11 @@ idx_set = set(range(200))
 best_idx_list = np.zeros([200,1], dtype='int')
 results = np.zeros([200,1])
 sigma = np.zeros([200,1])
-Nexp = 100
+Nexp = 10
 
 data_use, X_val, y_use, y_val = train_test_split(data.loc[:, :],
                                                  y,
-                                                 test_size=0.2)
+                                                 test_size=0.1)
 
 # First element
 ordered_data = data_use.loc[:,0]
@@ -52,7 +52,7 @@ idx_set.remove(0)
 
 # MAE as a function of descriptor number
 lm = LinearRegression()
-for i in range(1, 116):
+for i in range(1, 50):
 
     for idx in idx_set:
 
@@ -100,8 +100,8 @@ np.save('y_ext_int_mae_train_test_val.npy', y_use)
 # y_use = np.load('best_idx_ext_int_mae_train_test_val.npy')
 
 plt.plot(results)
-print(np.argmin(results[1:114]))
-print(np.min(results[1:114]))
+print(np.argmin(results[1:50]))
+print(np.min(results[1:50]))
 
 number_of_descriptors = np.argmin(results[1:114]) + 1  # WARNING! is 1:, so +1
 y = y_use
@@ -136,3 +136,12 @@ np.mean(abs(error))
 
 import scipy
 print(scipy.stats.pearsonr(y_val[:,0], y_pred))    
+
+"""
+Results:
+
+Ran twice. This set up requires to be run many times to evaluate the effect
+of having a new VALIDATION SET. As far as I've seen, the results are a bit worse
+than with our previous set up. 6.5-7 years error. This error rate is quite dependant
+on the % of the set extracted for validation and is just for a single run. 
+"""

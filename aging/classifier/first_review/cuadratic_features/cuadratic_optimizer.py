@@ -34,14 +34,17 @@ data = pd.concat((data_ext, data_int),
 y = pd.read_csv('age.csv', header=None)
 y = np.array(y)
 
+for i, y_ in enumerate(y):
+    print(y_)
+    np.polyfit(data.loc[:,i], y, deg=2).shape
 
-ordered_data, best_idx_list, results_young, sigma = optimize(data,
+ordered_data, best_idx_list, results, sigma = optimize(data,
                                                              y,
                                                              nexp=100)
 
 np.save('best_idx_ext_int_mae_cuadratic.npy', best_idx_list)
 np.save('ordered_data_ext_int_mae_cuadratic.npy', ordered_data)
-np.save('results_ext_int_mae_cuadratic.npy', results_young)
+np.save('results_ext_int_mae_cuadratic.npy', results)
 np.save('sigma_ext_int_mae_cuadratic.npy', sigma)
 
 
@@ -92,3 +95,14 @@ def optimize(data, y, nexp=10):
                                  ignore_index=True)
 
     return ordered_data, best_idx_list, results, sigma
+
+results = np.load('results_ext_int_mae_cuadratic.npy')
+# plt.plot(results)
+print(np.argmin(results[1:59]))
+print(np.min(results[1:59]))
+
+"""
+Results:
+
+Cuadratic features: 36 features, 5.85 min mean error
+"""
