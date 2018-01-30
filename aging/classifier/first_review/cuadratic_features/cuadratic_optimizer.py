@@ -56,7 +56,7 @@ def optimize(data, y, nexp=10):
 
     # MAE as a function of descriptor number
     lm = LinearRegression()
-    for i in range(1, 60):
+    for i in range(1, 101):
         for idx in idx_set:
             new_column = data.loc[:, idx]
             X = pd.concat((ordered_data, new_column),
@@ -145,8 +145,24 @@ Results:
 Cuadratic features and fitting: 57 features, 5.87 min mean error
 """
 
+# PLOT
 
 
+ordered_data = np.load('ordered_data_ext_int_mae_cuadratic_polyfit.npy')
+results = np.squeeze(np.load('results_ext_int_mae_cuadratic_polyfit.npy'))
+sigma = np.squeeze(np.load('sigma_ext_int_mae_cuadratic_polyfit.npy'))
+
+
+x = np.linspace(0, 200, 200)
+plt.plot(x, results, label='MAE')
+plt.fill_between(x, results-sigma, results+sigma, alpha=0.5) 
+
+
+plt.axis([0, 100, 0, 30])
+plt.xlabel('Number of Descriptors')
+plt.ylabel('Cross-Validated MAE')
+plt.legend()
+plt.savefig('/home/asier/Desktop/cuadratic.eps', format='eps', dpi=1000)
 
 
 
