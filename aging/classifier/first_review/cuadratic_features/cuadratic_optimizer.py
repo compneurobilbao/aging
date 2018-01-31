@@ -166,3 +166,43 @@ plt.savefig('/home/asier/Desktop/cuadratic.eps', format='eps', dpi=1000)
 
 
 
+# superpose plot
+from os.path import join as opj
+os.chdir(os.path.join(ag.__path__[0], 'classifier'))
+
+cuadratic_path = os.path.join(ag.__path__[0], 'classifier',
+                              'first_review',
+                              'cuadratic_features')
+    
+   
+results_c = np.squeeze(np.load(opj(cuadratic_path, 'results_ext_int_mae_cuadratic_polyfit.npy')))
+sigma_c = np.squeeze(np.load(opj(cuadratic_path,'sigma_ext_int_mae_cuadratic_polyfit.npy')))
+
+results = np.squeeze(np.load('results_ext_int_mae.npy'))
+sigma = np.squeeze(np.load('sigma_ext_int_mae.npy'))
+
+results_shuf = np.squeeze(np.load('results_ext_int_shuf_mae.npy'))
+sigma_shuf = np.squeeze(np.load('sigma_ext_int_shuf_mae.npy'))
+
+x = np.linspace(0, 200, 200)
+plt.plot(x, results, label='MAE')
+plt.fill_between(x, results-sigma, results+sigma, alpha=0.5) 
+
+plt.hold(True)
+
+plt.plot(x, results_shuf, color='#CC4F1B', label='MAE shuffled')
+plt.fill_between(x, results_shuf-sigma_shuf, results_shuf+sigma_shuf, alpha=0.5, 
+                 edgecolor='#CC4F1B', facecolor='#FF9848') 
+
+plt.hold(True)
+
+plt.plot(x, results_c, color='#C94F1B', label='MAE shuffled')
+plt.fill_between(x, results_c-sigma_c, results_c+sigma_c, alpha=0.5, 
+                 edgecolor='#C94F1B', facecolor='#F99848') 
+
+plt.axis([0, 100, 0, 30])
+plt.xlabel('Number of Descriptors')
+plt.ylabel('Cross-Validated MAE')
+plt.legend()
+plt.savefig('/home/asier/Desktop/lin_cuad_shuff.eps', format='eps', dpi=1000)
+
