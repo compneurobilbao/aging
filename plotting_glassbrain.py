@@ -60,7 +60,7 @@ for root, dirs, files in os.walk("/home/asier/Desktop/figs"):
 
 
 
-ssssssssssssssssssssssssssssssssss
+
 
 
 
