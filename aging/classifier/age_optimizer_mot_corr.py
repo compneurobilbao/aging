@@ -236,5 +236,35 @@ np.save('sigma_ext_int_shuf_mae.npy', sigma)
 
 
 
+#####
+## Plot HIPP best descriptor and FST best descriptor
+#####
+
+# import y data, age
+y = np.array(pd.read_csv('age.csv', header=None))
+
+data_ext = pd.read_csv('data_ext.csv', header=None).T
+data_int = pd.read_csv('data_int.csv', header=None).T
+
+data = pd.concat((data_ext, data_int), axis = 1, ignore_index = True)
+data= data.loc
+
+import numpy as np, pandas as pd; np.random.seed(0)
+import seaborn as sns
+sns.set(style="white", color_codes=True)
+ax = sns.regplot(y=data[:,0], x=y[:,0])
+plt.ylabel("descriptor value")
+plt.xlabel("age")
+plt.title("Best descriptor FST")
+plt.savefig('best_desc_FST.svg', type='svg', dpi=1000)
+
+ax = sns.regplot(y=data[:,11], x=y[:,0])
+plt.ylabel("descriptor value")
+plt.xlabel("age")
+plt.title("Best descriptor Hippocampus")
+plt.savefig('best_desc_hipp.svg', type='svg', dpi=1000)
+
+sns.jointplot(y=data[:,0], x=y[:,0])
+sns.jointplot(y=data[:,11], x=y[:,0])
 
 

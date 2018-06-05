@@ -62,5 +62,8 @@ ax = sns.regplot(x=x, y=y, marker="+")
 sns.jointplot(x=x, y=y)
 
 
+sns.distplot(age_data['age'], bins=10, kde=False)
+
+
 
 
